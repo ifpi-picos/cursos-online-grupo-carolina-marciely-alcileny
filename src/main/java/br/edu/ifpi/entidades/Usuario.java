@@ -1,5 +1,6 @@
 package br.edu.ifpi.entidades;
 
+import br.edu.ifpi.Dao.UsuarioDao;
 import br.edu.ifpi.enums.PapeisUsuario;
 
 public class Usuario {
@@ -28,6 +29,32 @@ public class Usuario {
     public Usuario(int id, PapeisUsuario papel) {
         this.id = id;
         this.papel = papel;
+    }
+
+    public void realizarCadastro(String nomeUsuario, String emailUsuario, PapeisUsuario papeisUsuario, String senhaUsuario) {
+
+        Usuario usuario = new Usuario(0, nomeUsuario, emailUsuario, papeisUsuario, senhaUsuario);
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.cadastrar(usuario);
+    }
+
+    public void visualizarListaDeUsuarios() {
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.consultar();
+        
+    }
+
+    public void atualizarCadastro(int idUsuario, String nomeUsuario, String emailUsuario, PapeisUsuario PapeisUsuario, String senhaUsuario) {
+        UsuarioDao usuarioDao = new UsuarioDao();
+        Usuario usuario = new Usuario(idUsuario, nomeUsuario, emailUsuario, PapeisUsuario, senhaUsuario);
+        usuarioDao.alterar(usuario);
+    }
+
+    public void excluirCadastro(int idUsuario) {
+        UsuarioDao usuarioDao = new UsuarioDao();
+        
+        Usuario usuario = new Usuario(idUsuario, null, null, null, null);
+        usuarioDao.remover(usuario);
     }
 
     public int getId() {

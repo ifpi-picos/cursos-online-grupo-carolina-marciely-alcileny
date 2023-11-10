@@ -5,12 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import br.edu.ifpi.entidades.CursoProfessor;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class CursoProfessorDao implements Dao<CursoProfessor> {
-
-    private Mensagem mensagem = new Mensagem();
 
     @Override
     public void cadastrar(CursoProfessor associacaoProfessor) {
@@ -33,39 +31,32 @@ public class CursoProfessorDao implements Dao<CursoProfessor> {
                     .prepareStatement(query)) {
                 stm.setInt(1, associacaoProfessor.getIdCurso());
                 stm.setInt(2, associacaoProfessor.getIdProfessor());
-                int linhasAfetadas = stm.executeUpdate();
+                stm.executeUpdate();
 
-                mensagem.imprimirMenssagemDeAssociacao(mensagem.SUCESSO, "curso");
+                System.out.println("Professor associado ao curso com sucesso!");
+               
             } catch (SQLException e) {
-                e.printStackTrace();
-                mensagem.imprimirMenssagemDeAssociacao(mensagem.ERRO, "curso");
-            } catch (Exception e) {
-                e.printStackTrace();
-                mensagem.imprimirMenssagemDeAssociacao(mensagem.ERRO, "curso");
+                System.out.println("Ocorreu um erro ao associar professor e este curso");
+               
             }
 
         } else {
-            System.out.println("Este professor ja esta associado");
-            Mensagem.pausar();
+            System.out.println("Este professor ja esta associado neste curso");
+           
         }
     }
 
     @Override
     public void consultar() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'consultar'");
     }
 
     @Override
     public void remover(CursoProfessor associacaoProfessor) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'remover'");
     }
 
     @Override
     public void alterar(CursoProfessor associacaoProfessor) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'alterar'");
+        
     }
 
     @Override
@@ -91,9 +82,8 @@ public class CursoProfessorDao implements Dao<CursoProfessor> {
                 associados.add(associado);
             }
         } catch (SQLException e) {
-            mensagem.imprimirErroAoCarregarDados("matricula");
-        } catch (Exception e) {
-            mensagem.imprimirErroAoCarregarDados("matricula");
+            System.out.println("Ocorreu um erro ao carregar dados dos cursos e professores associados");
+           
         }
         return associados;
     }

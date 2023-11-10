@@ -8,11 +8,8 @@ import java.util.List;
 
 import br.edu.ifpi.entidades.CursoProfessor;
 import br.edu.ifpi.entidades.Professor;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class ProfessorDao implements Dao<Professor> {
-
-  private Mensagem mensagem = new Mensagem();
 
   @Override
   public void cadastrar(Professor professor) {
@@ -23,12 +20,11 @@ public class ProfessorDao implements Dao<Professor> {
       stm.setString(2, professor.getEmail());
       stm.executeUpdate();
 
-      mensagem.imprimirMenssagemDeCadastro(mensagem.SUCESSO, "professor");
+      System.out.println("Professor cadastrado com sucesso!");
+     
     } catch (SQLException e) {
-      mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "professor");
-    } catch (Exception e) {
-      mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "professor");
-
+      System.out.println("Ocorreu um erro ao cadastrar este professor");
+     
     }
   }
 
@@ -46,8 +42,10 @@ public class ProfessorDao implements Dao<Professor> {
         System.out.println("|-----------------------------------------------");
       }
       System.out.println("|===============================================");
+     
     } else {
-      mensagem.imprimirMensagemNenhumDado("professor");
+      System.out.println("Nenhum professor cadastrado encontrado");
+     
     }
   }
 
@@ -71,8 +69,8 @@ public class ProfessorDao implements Dao<Professor> {
       }
       return professores;
     } catch (SQLException e) {
-      e.printStackTrace();
-      mensagem.imprimirErroAoCarregarDados("professor");
+      System.out.println("Ocorreu um erro ao carregar dados dos professores!");
+     
       return null;
     }
   }
@@ -84,11 +82,12 @@ public class ProfessorDao implements Dao<Professor> {
         .prepareStatement(query)) {
       stm.setInt(1, professor.getId());
       stm.executeUpdate();
-      mensagem.imprimirMenssagemDeExclusao(mensagem.SUCESSO, "professor");
+
+      System.out.println("Professor removido com sucesso!");
+     
     } catch (SQLException e) {
-      mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "professor");
-    } catch (Exception e) {
-      mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "professor");
+      System.out.println("Ocorreu um erro ao remover este professor");
+     
     }
   }
 
@@ -101,11 +100,11 @@ public class ProfessorDao implements Dao<Professor> {
       stm.setString(2, professor.getEmail());
       stm.setInt(3, professor.getId());
       stm.executeUpdate();
-      mensagem.imprimirMenssagemDeAtualizacao(mensagem.SUCESSO, "professor");
+      System.out.println("Informacoes do professor alterada com sucesso!");
+     
     } catch (SQLException e) {
-      mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "professor");
-    } catch (Exception e) {
-      mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "professor");
+        System.out.println("Ocorreu um erro ao alterar informacoes deste professor");
+       
     }
   }
 
@@ -137,8 +136,10 @@ public class ProfessorDao implements Dao<Professor> {
         }
         System.out.println("|===============================================");
       }
+     
     } else {
-      mensagem.imprimirMensagemNenhumDado("professor");
+      System.out.println("Nenhum professor cadastrado encontrado");
+     
     }
   }
 }

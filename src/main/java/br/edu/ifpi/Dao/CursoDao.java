@@ -10,10 +10,8 @@ import br.edu.ifpi.entidades.Curso;
 import br.edu.ifpi.entidades.CursoAluno;
 import br.edu.ifpi.entidades.Nota;
 import br.edu.ifpi.enums.StatusCurso;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class CursoDao implements Dao<Curso> {
-    private Mensagem mensagem = new Mensagem();
 
     @Override
     public void cadastrar(Curso curso) {
@@ -25,19 +23,16 @@ public class CursoDao implements Dao<Curso> {
             stm.setString(3, curso.getStatus().toString());
             stm.executeUpdate();
 
-            mensagem.imprimirMenssagemDeCadastro(mensagem.SUCESSO, "curso");
+            System.out.println("Curso cadastrado com sucesso!");
+           
         } catch (SQLException e) {
-            e.printStackTrace();
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "curso");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "curso");
-
+            System.out.println("Ocorreu um erro ao cadastrar este curso");
+           
         }
     }
 
     @Override
     public void consultar() {
-        Mensagem.limparConsole();
         List<Curso> cursos = new ArrayList<>();
         cursos = carregarDados();
         if (!cursos.isEmpty()) {
@@ -52,7 +47,9 @@ public class CursoDao implements Dao<Curso> {
             }
             System.out.println("|===============================================");
         } else {
-            mensagem.imprimirMensagemNenhumDado("curso");
+            System.out.println("Nenhum curso cadastrado foi encontrado!");
+           
+        
         }
     }
 
@@ -76,8 +73,8 @@ public class CursoDao implements Dao<Curso> {
             }
             return cursos;
         } catch (SQLException e) {
-            e.printStackTrace();
-            mensagem.imprimirErroAoCarregarDados("curso");
+            System.out.println("Ocorreu um erro ao carregar dados dos cursos");
+           
             return null;
         }
     }
@@ -89,11 +86,12 @@ public class CursoDao implements Dao<Curso> {
                 .prepareStatement(query)) {
             stm.setInt(1, curso.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeExclusao(mensagem.SUCESSO, "curso");
+
+            System.out.println("Curso removido com sucesso!");
+           
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "curso");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "curso");
+            System.out.println("Ocorreu um erro ao temover este curso");
+           
         }
     }
 
@@ -107,11 +105,11 @@ public class CursoDao implements Dao<Curso> {
             stm.setString(3, curso.getStatus().toString());
             stm.setInt(4, curso.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.SUCESSO, "curso");
+            System.out.println("Curso atualizado com sucesso!");
+           
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "curso");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "curso");
+            System.out.println("Ocorreu um erro ao atualizar este curso");
+           
         }
     }
 
@@ -155,20 +153,20 @@ public class CursoDao implements Dao<Curso> {
                         notaReprovado++;
                     }
                 }
-
             }
 
-            mediaNotas = totalNotas > 0 ? somaNota / totalNotas : 0;
-            porcentagemAprovado = totalNotas > 0 ? (double) notaAprovado / totalNotas * 100 : 0;
-            porcentagemReprovado = totalNotas > 0 ? (double) notaReprovado / totalNotas * 100 : 0;
-
-            System.out.println("| Quantidade de alunos matriculados: " + totalMatriculados);
-            System.out.println("| Nota media dos alunos: " + String.format("%.2f", mediaNotas));
-            System.out.println("| Porcentagem dos alunos aprovados: " + porcentagemAprovado + "%");
-            System.out.println("| Porcentagem dos alunos reprovados: " + porcentagemReprovado + "%");
-            System.out.println("|-----------------------------------------------|");
-        }
-        System.out.println("|===============================================|");
+                mediaNotas = totalNotas > 0 ? somaNota / totalNotas : 0;
+                porcentagemAprovado = totalNotas > 0 ? (double) notaAprovado / totalNotas * 100 : 0;
+                porcentagemReprovado = totalNotas > 0 ? (double) notaReprovado / totalNotas * 100 : 0;
+    
+                System.out.println("| Quantidade de alunos matriculados: " + totalMatriculados);
+                System.out.println("| Nota media dos alunos: " + String.format("%.2f", mediaNotas));
+                System.out.println("| Porcentagem dos alunos aprovados: " + porcentagemAprovado + "%");
+                System.out.println("| Porcentagem dos alunos reprovados: " + porcentagemReprovado + "%");
+                System.out.println("|-----------------------------------------------|");
+            }
+            System.out.println("|===============================================|");
+           
     }
 
     public void listarCursos(StatusCurso statusCurso) {
@@ -197,8 +195,10 @@ public class CursoDao implements Dao<Curso> {
 
             }
             System.out.println("|===============================================");
+           
         } else {
-            mensagem.imprimirMensagemNenhumDado("curso");
+            System.out.println("Nenhum curso cadastrado foi encontrado");
+           
         }
     }
 

@@ -22,14 +22,14 @@
        CREATE TABLE curso_e_professor( 
         id serial PRIMARY KEY,   
         curso_id INT REFERENCES curso(id) ON DELETE CASCADE ON UPDATE CASCADE,  
-        professor_id INT REFERENCES professor(id) ON DELETE CASCADE ON UPDATE CASCADE  
-        status VARCHAR (100) NOT NULL,  
+        professor_id INT REFERENCES professor(id) ON DELETE CASCADE ON UPDATE CASCADE
        ); 
 
        CREATE TABLE curso_e_aluno( 
         id serial PRIMARY KEY,   
         curso_id INT REFERENCES curso(id) ON DELETE CASCADE ON UPDATE CASCADE,  
-        aluno_id INT REFERENCES aluno(id) ON DELETE CASCADE ON UPDATE CASCADE  
+        aluno_id INT REFERENCES aluno(id) ON DELETE CASCADE ON UPDATE CASCADE,
+        status VARCHAR (100) NOT NULL  
        ); 
 
       CREATE TABLE usuario( 

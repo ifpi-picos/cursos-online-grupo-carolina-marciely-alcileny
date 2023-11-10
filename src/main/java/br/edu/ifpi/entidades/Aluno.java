@@ -1,12 +1,8 @@
 package br.edu.ifpi.entidades;
 
-import java.util.Scanner;
-
 import br.edu.ifpi.Dao.AlunoDao;
-import br.edu.ifpi.Dao.CursoDao;
 import br.edu.ifpi.Dao.CursoAlunoDao;
 import br.edu.ifpi.enums.StatusMatricula;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class Aluno {
     private int id;
@@ -22,93 +18,47 @@ public class Aluno {
     public Aluno() {
     }
 
-    
+    public void realizarCadastro(String nomeAluno, String emailAluno) {
 
-    public void atualizarCadastro() {
-        Mensagem.limparConsole();
+        Aluno aluno = new Aluno(0, nomeAluno, emailAluno);
         AlunoDao alunoDao = new AlunoDao();
-        Scanner scanner = new Scanner(System.in);
-        alunoDao.consultar();
-        System.out.println("Informe o ID do aluno");
-        int id = scanner.nextInt();
-        Mensagem.limparConsole();
-        System.out.println("Informe o novo nome do aluno");
-        String nome = scanner.next();
-        System.out.println("Informe o novo e-mail do aluno");
-        String email = scanner.next();
-        Mensagem.limparConsole();
+        alunoDao.cadastrar(aluno);
+    }
 
-        Aluno aluno = new Aluno(id, nome, email);
+    public void atualizarCadastro(int idAluno, String nomeAluno, String emailAluno) {
+
+        Aluno aluno = new Aluno(idAluno, nomeAluno, emailAluno);
+        AlunoDao alunoDao = new AlunoDao();
         alunoDao.alterar(aluno);
     }
 
-    public void realizarMatricula() {
-        Mensagem.limparConsole();
-        CursoDao cursoDao = new CursoDao();
-        AlunoDao alunoDao = new AlunoDao();
-        Scanner scanner = new Scanner(System.in);
-        alunoDao.consultar();
-        System.out.println("Informe o ID do aluno");
-        int idAluno = scanner.nextInt();
-        Mensagem.limparConsole();
-        cursoDao.consultar();
-        System.out.println("Informe o ID do curso");
-        int idCurso = scanner.nextInt();
-        Mensagem.limparConsole();
-
+    public void realizarMatricula(int idCurso, int idAluno) {
+    AlunoDao alunoDao = new AlunoDao();
        alunoDao.realizarMatricula(idCurso, idAluno);
 
     }
 
-    public void visualizarPerfil() {
-        Mensagem.limparConsole();
+    public void visualizarPerfil(int idAluno) {
         AlunoDao alunoDao = new AlunoDao();
-        alunoDao.consultar();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Informe o ID do aluno");
-        int idAluno = scanner.nextInt();
         alunoDao.visualizarPerfil(idAluno);
-        Mensagem.pausar();
+        
     }
 
-    public void cancelarMatricula() {
-        Mensagem.limparConsole();
+    public void cancelarMatricula(int idCurso, int idAluno) {
         AlunoDao alunoDao = new AlunoDao();
-        CursoDao cursoDao = new CursoDao();
-        CursoAlunoDao matriculaDao = new CursoAlunoDao();
-        Scanner scanner = new Scanner(System.in);
-        alunoDao.consultar();
-        System.out.println("Informe o ID do aluno");
-        int idAluno = scanner.nextInt();
-        Mensagem.limparConsole();
-        cursoDao.consultar();
-        System.out.println("Informe o ID do curso");
-        int idCurso = scanner.nextInt();
         alunoDao.cancelarMatricula(idCurso, idAluno);
     }
 
-    public void concluirMatricula() {
-        Mensagem.limparConsole();
-        AlunoDao alunoDao = new AlunoDao();
-        CursoDao cursoDao = new CursoDao();
+    public void concluirMatricula(int idCurso, int idAluno) {
         CursoAlunoDao matriculaDao = new CursoAlunoDao();
-        Scanner scanner = new Scanner(System.in);
-        alunoDao.consultar();
-        System.out.println("Informe o ID do aluno");
-        int idAluno = scanner.nextInt();
-        Mensagem.limparConsole();
-        cursoDao.consultar();
-        System.out.println("Informe o ID do curso");
-        int idCurso = scanner.nextInt();
-
-        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CONCLUIDO);
+        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CONCLUIDO,0);
         matriculaDao.alterar(matricula);
     }
 
     public void gerarRelatorioDesempenho() {
         AlunoDao alunoDao = new AlunoDao();
         alunoDao.gerarRelatorioDesempenho();
-        Mensagem.pausar();
+        
     }
 
     public int getId() {

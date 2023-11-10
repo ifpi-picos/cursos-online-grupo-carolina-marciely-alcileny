@@ -8,11 +8,9 @@ import java.util.List;
 
 import br.edu.ifpi.entidades.Usuario;
 import br.edu.ifpi.enums.PapeisUsuario;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class UsuarioDao implements Dao<Usuario> {
     private PapeisUsuario papel;
-    private Mensagem mensagem = new Mensagem();
 
     public UsuarioDao(PapeisUsuario papel) {
         this.papel = papel;
@@ -40,7 +38,8 @@ public class UsuarioDao implements Dao<Usuario> {
             }
             return usuarios;
         } catch (SQLException e) {
-            mensagem.imprimirErroAoCarregarDados("usuario");
+            System.out.println("Ocorreu um erro ao carregar dados dos usuarios");
+           
             return null;
         }
     }
@@ -57,17 +56,16 @@ public class UsuarioDao implements Dao<Usuario> {
             stm.setString(4, usuario.getPapel().toString());
             stm.executeUpdate();
 
-            mensagem.imprimirMenssagemDeCadastro(mensagem.SUCESSO, "usuario");
+            System.out.println("Usuario cadastrado com sucesso!");
+           
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "usuario");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "usuario");
+            System.out.println("Ocorreu um erro ao cadastrar este usuario");
+           
         }
     }
 
     @Override
     public void consultar() {
-        Mensagem.limparConsole();
         List<Usuario> usuarios = carregarDados();
         if (!usuarios.isEmpty()) {
             System.out.println("|=============LISTA DE USUARIOS=================");
@@ -80,8 +78,10 @@ public class UsuarioDao implements Dao<Usuario> {
                 System.out.println("|-----------------------------------------------");
             }
             System.out.println("|===============================================");
+           
         } else {
-            mensagem.imprimirMensagemNenhumDado("usuario");
+            System.out.println("Nenhum usuario cadastrado encontrado");
+           
         }
     }
 
@@ -92,11 +92,12 @@ public class UsuarioDao implements Dao<Usuario> {
                 .prepareStatement(query)) {
             stm.setInt(1, usuario.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeExclusao(mensagem.SUCESSO, "usuario");
+
+            System.out.println("Usuario removido com sucesso!");
+           
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "usuario");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "usuario");
+            System.out.println("Ocorreu um erro ao remover este usuario");
+           
         }
     }
 
@@ -108,16 +109,14 @@ public class UsuarioDao implements Dao<Usuario> {
             stm.setString(1, usuario.getNome());
             stm.setString(2, usuario.getEmail());
             stm.setString(3, usuario.getSenha());
-            //stm.setString(4, usuario.getPapel().toString());
             stm.setInt(4, usuario.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.SUCESSO, "usuario");
+
+            System.out.println("Informacoes do usuario atualizado com sucesso!");
+           
         } catch (SQLException e) {
-            e.printStackTrace();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "usuario");
-        } catch (Exception e) {
-            e.printStackTrace();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "usuario");
+            System.out.println("Ocorreu um erro ao atualizar informacoes do usuario");
+           
         }
     }
 
@@ -132,12 +131,13 @@ public class UsuarioDao implements Dao<Usuario> {
             stm.setString(1, usuario.getPapel().toString());
             stm.setInt(2, usuario.getId());
              stm.executeUpdate();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.SUCESSO, "Permissao");
-        } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "Permissao");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "Permissao");
-        }
+
+             System.out.println("Usuario atualizado com sucesso!");
+            
+            } catch (SQLException e) {
+                System.out.println("Ocorreu um erro ao atualizar este usuario");
+               
+            }
     }
 
     public Usuario authenticar(Usuario usuario){
@@ -156,7 +156,8 @@ public class UsuarioDao implements Dao<Usuario> {
                 return usuarioAuthenticado;
             }
         } catch (SQLException e) {
-            mensagem.imprimirErroAoCarregarDados("usuario");
+            System.out.println("Ocorreu um erro ao authenticar este usuario");
+           
         }
         return null;
     }

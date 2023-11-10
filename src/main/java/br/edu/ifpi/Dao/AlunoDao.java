@@ -5,14 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import br.edu.ifpi.entidades.Aluno;
 import br.edu.ifpi.entidades.CursoAluno;
 import br.edu.ifpi.enums.StatusMatricula;
-import br.edu.ifpi.utilidades.Mensagem;
 
 public class AlunoDao implements Dao<Aluno> {
-    private Mensagem mensagem = new Mensagem();
 
     @Override
     public void cadastrar(Aluno aluno) {
@@ -24,17 +21,16 @@ public class AlunoDao implements Dao<Aluno> {
             stm.setString(2, aluno.getEmail());
             stm.executeUpdate();
 
-            mensagem.imprimirMenssagemDeCadastro(mensagem.SUCESSO, "aluno");
+            System.out.println("Aluno cadastrado com sucesso!");
+            
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "aluno");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeCadastro(mensagem.ERRO, "aluno");
+            System.out.println("Ocorreu um erro ao cadastrar este aluno");
+            
         }
     }
 
     @Override
     public void consultar() {
-        Mensagem.limparConsole();
         List<Aluno> alunos = new ArrayList<>();
         alunos = carregarDados();
         if (!alunos.isEmpty()) {
@@ -47,11 +43,14 @@ public class AlunoDao implements Dao<Aluno> {
 
                 System.out.println("|==============================================");
             }
+            
         } else {
-            mensagem.imprimirMensagemNenhumDado("aluno");
+            System.out.println("Nenhum aluno cadastrado foi encontrado!");
+            
+
         }
     }
-    
+
     @Override
     public void remover(Aluno aluno) {
         String query = "DELETE FROM aluno WHERE ? = id";
@@ -59,11 +58,11 @@ public class AlunoDao implements Dao<Aluno> {
                 .prepareStatement(query)) {
             stm.setInt(1, aluno.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeExclusao(mensagem.SUCESSO, "aluno");
+            System.out.println("Aluno removido com sucesso!");
+            
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "aluno");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeExclusao(mensagem.ERRO, "aluno");
+            System.out.println("Ocorreu um erro ao remover este aluno");
+            
         }
     }
 
@@ -76,11 +75,12 @@ public class AlunoDao implements Dao<Aluno> {
             stm.setString(2, aluno.getEmail());
             stm.setInt(3, aluno.getId());
             stm.executeUpdate();
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.SUCESSO, "aluno");
+
+            System.out.println("Aluno atualizado com sucesso!");
+            
         } catch (SQLException e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "aluno");
-        } catch (Exception e) {
-            mensagem.imprimirMenssagemDeAtualizacao(mensagem.ERRO, "aluno");
+            System.out.println("Ocorreu um erro ao atualizar informacoes deste aluno");
+            
         }
     }
 
@@ -103,8 +103,8 @@ public class AlunoDao implements Dao<Aluno> {
             }
             return alunos;
         } catch (SQLException e) {
-            e.printStackTrace();
-            mensagem.imprimirErroAoCarregarDados("aluno");
+            System.out.println("Erro ao carregar dados dos alunos");
+            
             return null;
         }
     }
@@ -125,8 +125,8 @@ public class AlunoDao implements Dao<Aluno> {
             }
             return aluno;
         } catch (SQLException e) {
-            e.printStackTrace();
-            mensagem.imprimirErroAoCarregarDados("aluno");
+            System.out.println("Erro ao carregar dados do aluno!");
+            
             return null;
         }
     }
@@ -150,10 +150,10 @@ public class AlunoDao implements Dao<Aluno> {
             }
         }
         System.out.println("|===============================================");
+        
     }
 
     public void gerarRelatorioDesempenho() {
-        Mensagem.limparConsole();
         List<Aluno> alunos = new ArrayList<>();
         alunos = carregarDados();
         CursoAlunoDao matriculaAlunoDao = new CursoAlunoDao();
@@ -171,7 +171,8 @@ public class AlunoDao implements Dao<Aluno> {
                 System.out.println("|------------Cursos Matriculados----------------");
                 for (CursoAluno matricula : matriculas) {
                     if (matricula.getIdAluno() == alunos.get(i).getId()) {
-                        System.out.println("| " + matricula.getNomeCurso());
+                        System.out.println("| Curso: " + matricula.getNomeCurso() + ", Aproveitamento: "
+                                + matricula.getPorcentagemNota() + "%");
                     }
                 }
                 System.out.println("|-----------------------------------------------");
@@ -181,27 +182,30 @@ public class AlunoDao implements Dao<Aluno> {
                 for (CursoAluno matricula : matriculas) {
                     if (matricula.getIdAluno() == alunos.get(i).getId()
                             && matricula.getStatus() == StatusMatricula.CONCLUIDO) {
-                        System.out.println("| " + matricula.getNomeCurso());
+                        System.out.println("| Curso: " + matricula.getNomeCurso() + ", Aproveitamento: "
+                                + matricula.getPorcentagemNota() + "%");
                     }
                 }
                 System.out.println("|-----------------------------------------------");
                 System.out.println("|");
                 System.out.println("|===============================================");
             }
+            
         } else {
-            mensagem.imprimirMensagemNenhumDado("aluno");
+            System.out.println("Nenhum aluno cadastrado foi encontrado!");
+            
         }
     }
 
     public void realizarMatricula(int idCurso, int idAluno) {
         CursoAlunoDao matriculaDao = new CursoAlunoDao();
-        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CURSANDO);
+        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CURSANDO, 0);
         matriculaDao.cadastrar(matricula);
     }
 
     public void cancelarMatricula(int idCurso, int idAluno) {
         CursoAlunoDao matriculaDao = new CursoAlunoDao();
-        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CANCELADO);
+        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CANCELADO, 0);
         matriculaDao.alterar(matricula);
     }
 }
