@@ -225,8 +225,58 @@ public class Curso {
             System.out.println("Enter para ir para o menu principal");
             scanner.nextLine();
         }
+    } 
+       //novo método
+    public void exibirEstatisticasGerais() {
+        String queryMedia = "SELECT AVG(nota) AS media FROM nota";
+        String queryAprovados = "SELECT COUNT(*) AS aprovados FROM nota WHERE nota >= 7";
+        String queryTotalAlunos = "SELECT COUNT(*) AS totalAlunos FROM aluno";
+    
+        try (Statement stm = this.conexao.createStatement()) {
+            ResultSet resultMedia = stm.executeQuery(queryMedia);
+            double mediaGeral = 0.0;
+            if (resultMedia.next()) {
+                mediaGeral = resultMedia.getDouble("media");
+            }
+    
+            ResultSet resultAprovados = stm.executeQuery(queryAprovados);
+            int aprovados = 0;
+            if (resultAprovados.next()) {
+                aprovados = resultAprovados.getInt("aprovados");
+            }
+    
+    
+            ResultSet resultTotalAlunos = stm.executeQuery(queryTotalAlunos);
+            int totalAlunos = 0;
+            if (resultTotalAlunos.next()) {
+                totalAlunos = resultTotalAlunos.getInt("totalAlunos");
+            }
+    
+            
+            int reprovados = totalAlunos - aprovados;
+            double percentAprovados = (aprovados * 100.0) / totalAlunos;
+            double percentReprovados = (reprovados * 100.0) / totalAlunos;
+    
+            
+            System.out.println("|=====ESTATISTICAS GERAIS DOS ALUNOS=====|");
+            System.out.println("| Média Geral: " + mediaGeral);
+            System.out.println("|---------------------------------------|");
+            System.out.println("| Porcentagem de Alunos Aprovados: " + percentAprovados + "%");
+            System.out.println("| Porcentagem de Alunos Reprovados: " + percentReprovados + "%");
+            System.out.println("|=======================================|");
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("|----------------------------------------|");
+            System.out.println("| Erro ao calcular estatísticas gerais!  |");
+            System.out.println("|----------------------------------------|");
+        }
+    
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter para ir para o menu principal");
+        scanner.nextLine();
     }
-
+    
     public void visualizarListaDeCursos() {
         SistemaAcademico.limparConsole();
         String query = "SELECT * FROM curso";
@@ -280,10 +330,16 @@ public class Curso {
         }
     }
 
+    /**
+     * @return
+     */
     public int carregarDadosCurso() {
-        String query = "SELECT id, nome, status FROM curso";
-        int idSelecionado = 0;
-
+        String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
+        "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
+        "GROUP BY c.id, c.nome, c.status";
+       
+        
+        int idSelecionado;
         try {
             Statement stm = this.conexao.createStatement();
             ResultSet result = stm.executeQuery(query);
@@ -296,6 +352,9 @@ public class Curso {
                     String nome = result.getString("nome");
                     String status = result.getString("status");
                     System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
+                    int quantidadeAlunos = result.getInt("quantidade_alunos");
+                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
+                   " Quantidade de Alunos: " + quantidadeAlunos);
 
                 }
                 System.out.println("----------------------------------");
@@ -314,8 +373,11 @@ public class Curso {
 
     public int carregarDadosCursoMatriculado(int idAluno) {
         int idSelecionado = 0;
-        String query = "SELECT cur.id, cur.nome, cur.status FROM curso cur WHERE cur.id IN (SELECT curso_id FROM curso_e_aluno WHERE aluno_id = "
-                + idAluno + ")";
+        String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
+               "FROM curso c INNER JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
+               "WHERE ca.aluno_id = " + idAluno + " " +
+               "GROUP BY c.id, c.nome, c.status";
+
 
         try {
             Statement stm = this.conexao.createStatement();
@@ -328,7 +390,11 @@ public class Curso {
                     int id = result.getInt("id");
                     String nome = result.getString("nome");
                     String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
+                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status); 
+                    int quantidadeAlunos = result.getInt("quantidade_alunos");
+                     System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
+                   " Quantidade de Alunos: " + quantidadeAlunos);
+
                 }
                 System.out.println("----------------------------------");
 
@@ -410,4 +476,5 @@ public class Curso {
         return idSelecionado;
     }
 
-}
+} 
+     
