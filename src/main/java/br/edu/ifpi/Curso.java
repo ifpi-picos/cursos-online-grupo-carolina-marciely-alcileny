@@ -330,16 +330,13 @@ public class Curso {
         }
     }
 
-    /**
-     * @return
-     */
     public int carregarDadosCurso() {
         String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
         "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
         "GROUP BY c.id, c.nome, c.status";
        
         
-        int idSelecionado;
+        int idSelecionado = 0;
         try {
             Statement stm = this.conexao.createStatement();
             ResultSet result = stm.executeQuery(query);
