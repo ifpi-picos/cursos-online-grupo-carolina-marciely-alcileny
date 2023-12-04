@@ -348,7 +348,6 @@ public class Curso {
                     int id = result.getInt("id");
                     String nome = result.getString("nome");
                     String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
                     int quantidadeAlunos = result.getInt("quantidade_alunos");
                     System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
                    " Quantidade de Alunos: " + quantidadeAlunos);
