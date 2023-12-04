@@ -181,64 +181,6 @@ public class Aluno {
         }
     }
 
-    public void gerarRelatorioDesempenho() {
-        SistemaAcademico.limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
-
-        if (idAluno != 0) {
-
-            String query = "SELECT no.*, al.nome AS alnome, al.email, curs.nome AS cursos FROM aluno al LEFT JOIN nota no ON al.id = no.aluno_id LEFT JOIN curso curs ON curs.id = no.curso_id WHERE al.id = "
-                    + idAluno;
-            try {
-                Statement stm = this.conexao.createStatement();
-                ResultSet result = stm.executeQuery(query);
-
-                if (result.next()) {
-                    double nota = result.getDouble("nota");
-                    String nome = result.getString("alnome");
-                    String curso = result.getString("cursos");
-                    System.out.println("|=======RELATORIO DE DESEMPENHO DO ALUNO======|");
-                    System.out.println("| Nome: " + nome);
-                    System.out.println("|---------------------NOTAS-------------------|");
-                    if (curso == null) {
-                        System.out.println("| Nao existe notas para este aluno            |");
-                    } else {
-                        System.out.println("| Curso: " + curso + " Nota: " + nota);
-                    }
-
-                    while (result.next()) {
-                        nota = result.getDouble("nota");
-                        curso = result.getString("cursos");
-                        System.out.println("| Curso: " + curso + " Nota: " + nota);
-                    }
-                    System.out.println("|=============================================|");
-
-                } else {
-                    System.out.println("|------------------------------------|");
-                    System.out.println("| Nenhum registro encontrado!        |");
-                    System.out.println("|------------------------------------|");
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("|------------------------------------|");
-                System.out.println("| Erro ao carregar notas do aluno!   |");
-                System.out.println("|------------------------------------|");
-            }
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
-        } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!           |");
-            System.out.println("|------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
-        }
-    }
-
     public void cancelarMatricula() {
         SistemaAcademico.limparConsole();
         Curso curso = new Curso(conexao);
@@ -318,5 +260,58 @@ public class Aluno {
         }
 
         return idSelecionado;
+    }
+
+    public void cursosConcluidos() {
+        SistemaAcademico.limparConsole();
+        int idAluno = carregarDadosDoAluno();
+        SistemaAcademico.limparConsole();
+        if (idAluno != 0) {
+            String query = "SELECT matr.*, al.nome AS alnome, al.email, cur.nome AS curso FROM aluno al LEFT JOIN curso_e_aluno matr ON al.id = matr.aluno_id AND matr.concluido = 'sim' LEFT JOIN curso cur ON cur.id = matr.curso_id WHERE al.id = "
+                    + idAluno;
+            try {
+                Statement stm = this.conexao.createStatement();
+                ResultSet result = stm.executeQuery(query);
+
+                if (result.next()) {
+                    String nome = result.getString("alnome");
+                    String email = result.getString("email");
+                    String curso = result.getString("curso");
+                    System.out.println("|===============PERFIL DO ALUNO===============|");
+                    System.out.println("| Nome: " + nome);
+                    System.out.println("| E-mail: " + email);
+                    System.out.println("|--------------CURSOS CONCLUIDOS--------------|");
+
+                    if (curso == null) {
+                        System.out.println("| Nenhum curso concluido                      |");
+                    } else {
+                        System.out.println("| " + curso);
+                    }
+
+                    while (result.next()) {
+                        curso = result.getString("curso");
+                        System.out.println("| " + curso);
+                    }
+                    System.out.println("|=============================================|");
+                }
+            } catch (SQLException e) {
+                System.out.println("|----------------------------------|");
+                System.out.println("| Erro ao realizar matricula!      |");
+                System.out.println("|----------------------------------|");
+            }
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter para ir para o menu principal");
+            scanner.nextLine();
+
+        } else {
+            System.out.println("|-------------------------------------------|");
+            System.out.println("| Nenhum aluno encontrado!                  |");
+            System.out.println("|-------------------------------------------|");
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter para ir para o menu principal");
+            scanner.nextLine();
+        }
+
     }
 }
