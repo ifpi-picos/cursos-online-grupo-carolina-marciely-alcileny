@@ -198,7 +198,7 @@ public class SistemaAcademico {
                 aluno.atualizarInformacoes();
                 break;
             case 5:
-                mostrarMenuRelatorioDesempenho();
+                aluno.relatorioDesempenho();
                 break;
             case 6:
                 aluno.cancelarMatricula();
@@ -208,38 +208,6 @@ public class SistemaAcademico {
                 break;
             default:
                 System.out.println("Opcao invalida, tente novamente de 1 a 7!");
-                break;
-        }
-    }
-
-    private void mostrarMenuRelatorioDesempenho() {
-        limparConsole();
-        Aluno aluno = new Aluno(conexao);
-        System.out.println("|---------MENU RELATORIO DE DESEMPENHO---------|");
-        System.out.println("| 1 - Exibir cursos concluidos                 |");
-        System.out.println("| 2 - Exibir cursos matriculado                |");
-        System.out.println("| 3 - Exibir porcentagem de aproveitamento     |");
-        System.out.println("| 4 - Menu principal                           |");
-        System.out.println("|----------------------------------------------|");
-
-        System.out.println("Digite uma opcao!");
-        Scanner scanner = new Scanner(System.in);
-        int opcao = scanner.nextInt();
-
-        switch (opcao) {
-            case 1:
-                aluno.cursosConcluidos();
-                break;
-            case 2:
-                aluno.visualizarPerfil();
-                break;
-            case 3:
-                break;
-            case 4:
-                mostrarMenuPrincipal();
-                break;
-            default:
-                System.out.println("Opcao invalida, tente novamente de 1 a 4!");
                 break;
         }
     }
