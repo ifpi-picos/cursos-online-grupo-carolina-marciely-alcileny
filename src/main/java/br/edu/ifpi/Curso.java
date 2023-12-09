@@ -169,38 +169,34 @@ public class Curso {
     }
 
     public void gerarEstatisticasDesempenho() {
-        Aluno aluno = new Aluno(conexao);
         SistemaAcademico.limparConsole();
-        int idAluno = aluno.carregarDadosDoAluno();
+        int idCurso = carregarDadosCurso();
         SistemaAcademico.limparConsole();
+        if(idCurso != 0){
 
-        if (idAluno != 0) {
-
-            String query = "SELECT no.*, al.nome AS alnome, al.email, curs.nome AS cursos FROM aluno al LEFT JOIN nota no ON al.id = no.aluno_id LEFT JOIN curso curs ON curs.id = no.curso_id WHERE al.id = "
-                    + idAluno;
-            try {
+            String query = "SELECT curs.nome AS nome_curso,"+ 
+            "(SELECT COUNT(aluno_id) FROM curso_e_aluno WHERE curso_id = curs.id ) AS matriculados, " +
+            "(SELECT AVG(nota) FROM nota WHERE curso_id = curs.id ) AS media, " +
+            "(SELECT (SUM(CASE WHEN nota >= 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_aprovados, " +
+            "(SELECT (SUM(CASE WHEN nota < 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_reprovados " +
+            "FROM curso curs WHERE curs.id = " + idCurso;
+           try {
                 Statement stm = this.conexao.createStatement();
                 ResultSet result = stm.executeQuery(query);
 
                 if (result.next()) {
-                    double nota = result.getDouble("nota");
-                    String nome = result.getString("alnome");
-                    String curso = result.getString("cursos");
-                    System.out.println("|=====ESTATISTICAS DE DESEMPENHO DO ALUNO=====|");
-                    System.out.println("| Nome: " + nome);
-                    System.out.println("|---------------------NOTAS-------------------|");
-                    if (curso == null) {
-                        System.out.println("| Nao esta matriculado em nenhum curso |");
-                    } else {
-                        System.out.println("| Curso: " + curso + " Nota: " + nota);
-                    }
-
-                    while (result.next()) {
-                        nota = result.getDouble("nota");
-                        curso = result.getString("cursos");
-                        System.out.println("| Curso: " + curso + " Nota: " + nota);
-                    }
-                    System.out.println("|=============================================|");
+                    int matriculados = result.getInt("matriculados");
+                    double media = result.getInt("media");
+                    String nome = result.getString("nome_curso");
+                    int porcentAprovados = result.getInt("porcent_aprovados");
+                    int porcentReprovados = result.getInt("porcent_reprovados");
+                    System.out.println("|=====ESTATISTICAS DE DESEMPENHO DOS ALUNOS=====|");
+                    System.out.println("| Nome do Curso: " + nome);
+                    System.out.println("| Quantidade de alunos matriculados: " + matriculados);
+                    System.out.println("| Nota media dos alunos: " + media);
+                    System.out.println("| Porcentagem dos alunos aprovados: " + porcentAprovados +"%");
+                    System.out.println("| Porcentagem dos alunos reprovados: " + porcentReprovados+"%");
+                    System.out.println("|===============================================|");
 
                 } else {
                     System.out.println("|------------------------------------|");
@@ -219,63 +215,14 @@ public class Curso {
             scanner.nextLine();
         } else {
             System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!           |");
+            System.out.println("| Nenhum curso encontrado!           |");
             System.out.println("|------------------------------------|");
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter para ir para o menu principal");
             scanner.nextLine();
         }
     } 
-       //novo método
-    public void exibirEstatisticasGerais() {
-        String queryMedia = "SELECT AVG(nota) AS media FROM nota";
-        String queryAprovados = "SELECT COUNT(*) AS aprovados FROM nota WHERE nota >= 7";
-        String queryTotalAlunos = "SELECT COUNT(*) AS totalAlunos FROM aluno";
-    
-        try (Statement stm = this.conexao.createStatement()) {
-            ResultSet resultMedia = stm.executeQuery(queryMedia);
-            double mediaGeral = 0.0;
-            if (resultMedia.next()) {
-                mediaGeral = resultMedia.getDouble("media");
-            }
-    
-            ResultSet resultAprovados = stm.executeQuery(queryAprovados);
-            int aprovados = 0;
-            if (resultAprovados.next()) {
-                aprovados = resultAprovados.getInt("aprovados");
-            }
-    
-    
-            ResultSet resultTotalAlunos = stm.executeQuery(queryTotalAlunos);
-            int totalAlunos = 0;
-            if (resultTotalAlunos.next()) {
-                totalAlunos = resultTotalAlunos.getInt("totalAlunos");
-            }
-    
-            
-            int reprovados = totalAlunos - aprovados;
-            double percentAprovados = (aprovados * 100.0) / totalAlunos;
-            double percentReprovados = (reprovados * 100.0) / totalAlunos;
-    
-            
-            System.out.println("|=====ESTATISTICAS GERAIS DOS ALUNOS=====|");
-            System.out.println("| Média Geral: " + mediaGeral);
-            System.out.println("|---------------------------------------|");
-            System.out.println("| Porcentagem de Alunos Aprovados: " + percentAprovados + "%");
-            System.out.println("| Porcentagem de Alunos Reprovados: " + percentReprovados + "%");
-            System.out.println("|=======================================|");
-    
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("|----------------------------------------|");
-            System.out.println("| Erro ao calcular estatísticas gerais!  |");
-            System.out.println("|----------------------------------------|");
-        }
-    
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner.nextLine();
-    }
+
     
     public void visualizarListaDeCursos() {
         SistemaAcademico.limparConsole();
@@ -331,7 +278,7 @@ public class Curso {
     }
 
     public int carregarDadosCurso() {
-        String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
+        String query = "SELECT c.id, c.nome, c.status " +
         "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
         "GROUP BY c.id, c.nome, c.status";
        
@@ -348,9 +295,7 @@ public class Curso {
                     int id = result.getInt("id");
                     String nome = result.getString("nome");
                     String status = result.getString("status");
-                    int quantidadeAlunos = result.getInt("quantidade_alunos");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
-                   " Quantidade de Alunos: " + quantidadeAlunos);
+                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
 
                 }
                 System.out.println("----------------------------------");

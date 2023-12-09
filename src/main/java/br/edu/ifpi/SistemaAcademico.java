@@ -10,7 +10,7 @@ public class SistemaAcademico {
     private Connection conexao;
     private Usuario usuario;
     private boolean continuar = true;
-
+    // metodo usuario 
     public void carregarSistema(Usuario usuario, Connection conexao) {
         this.usuario = usuario;
         this.conexao = conexao;
@@ -247,14 +247,14 @@ public class SistemaAcademico {
     private void mostrarMenuCurso() {
         limparConsole();
         Curso curso = new Curso(conexao);
-        System.out.println("|-------------------MENU CURSO-----------------|");
-        System.out.println("| 1 - Cadastrar Curso                          |");
-        System.out.println("| 2 - Atualizar Curso                          |");
-        System.out.println("| 3 - Visualizar Lista de Cursos               |");
-        System.out.println("| 4 - Registrar Notas                          |");
-        System.out.println("| 5 - Gerar Estatiticas de desempenho do Aluno |");
-        System.out.println("| 6 - Menu principal                           |");
-        System.out.println("|----------------------------------------------|");
+        System.out.println("|-------------------MENU CURSO-------------------|");
+        System.out.println("| 1 - Cadastrar Curso                            |");
+        System.out.println("| 2 - Atualizar Curso                            |");
+        System.out.println("| 3 - Visualizar Lista de Cursos                 |");
+        System.out.println("| 4 - Registrar Notas                            |");
+        System.out.println("| 5 - Gerar Estatiticas de desempenho dos Alunos |");
+        System.out.println("| 6 - Menu principal                             |");
+        System.out.println("|------------------------------------------------|");
 
         System.out.println("Digite uma opcao!");
         Scanner scanner = new Scanner(System.in);
