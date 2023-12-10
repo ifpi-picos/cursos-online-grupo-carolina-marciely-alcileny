@@ -56,16 +56,12 @@ public class AutenticacaoAutorizacao {
                 System.out.println("| Erro ao atualizar permissao!  |");
                 System.out.println("|-------------------------------|");
             }
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|-------------------------------|");
             System.out.println("| Nenhum usuario encontrado!    |");
             System.out.println("|-------------------------------|");
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 

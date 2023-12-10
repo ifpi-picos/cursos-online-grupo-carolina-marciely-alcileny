@@ -52,10 +52,7 @@ public class Curso {
             System.out.println("| Erro ao realizar cadastro!         |");
             System.out.println("|------------------------------------|");
         }
-
-        Scanner scanner2 = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner2.nextLine();
+        SistemaAcademico.pausar();
     }
 
     public void atualizarCurso() {
@@ -100,18 +97,13 @@ public class Curso {
                 System.out.println("| Erro ao atualizar curso!           |");
                 System.out.println("|------------------------------------|");
             }
-
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
 
         } else {
             System.out.println("|------------------------------------|");
             System.out.println("| Nenhum curso encontrado!           |");
             System.out.println("|------------------------------------|");
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 
@@ -143,27 +135,20 @@ public class Curso {
                     System.out.println("| Erro ao registrar nota!              |");
                     System.out.println("|--------------------------------------|");
                 }
-
-                Scanner scanner2 = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner2.nextLine();
+                SistemaAcademico.pausar();
 
             } else {
                 System.out.println("|--------------------------------------|");
                 System.out.println("| Nenhum curso encontrado!             |");
                 System.out.println("|--------------------------------------|");
-                Scanner scanner2 = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner2.nextLine();
+                SistemaAcademico.pausar();
 
             }
         } else {
             System.out.println("|--------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!             |");
             System.out.println("|--------------------------------------|");
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         }
 
     }
@@ -210,16 +195,12 @@ public class Curso {
                 System.out.println("| Erro ao carregar notas do aluno!   |");
                 System.out.println("|------------------------------------|");
             }
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|------------------------------------|");
             System.out.println("| Nenhum curso encontrado!           |");
             System.out.println("|------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
     } 
 
@@ -264,16 +245,12 @@ public class Curso {
                 System.out.println("| Nenhum curso encontrado!           |");
                 System.out.println("|------------------------------------|");
             }
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
 
         } catch (SQLException e) {
             System.out.println("Erro ao carregar dados dos cursos!");
             System.out.println("----------------------------------");
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 
@@ -416,6 +393,5 @@ public class Curso {
 
         return idSelecionado;
     }
-
 } 
      

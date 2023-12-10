@@ -67,9 +67,7 @@ public class Usuario {
             System.out.println("| Erro ao cadastrar usuario!      |");
             System.out.println("|---------------------------------|");
         }
-        Scanner scanner2 = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner2.nextLine();
+        SistemaAcademico.pausar();
     }
 
     public void visualizarListaDeUsuarios() {
@@ -105,9 +103,7 @@ public class Usuario {
             System.out.println("| Erro ao carregar dados do usuario! |");
             System.out.println("|------------------------------------|");
         }
-        Scanner scanner2 = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner2.nextLine();
+        SistemaAcademico.pausar();
     }
 
     public void atualizarUsuario() {
@@ -139,16 +135,12 @@ public class Usuario {
                 System.out.println("| Erro ao atualizar dados do usuario! |");
                 System.out.println("|-------------------------------------|");
             }
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|------------------------------------|");
             System.out.println("| Erro ao carregar dados do usuario! |");
             System.out.println("|------------------------------------|");
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         }
 
     }

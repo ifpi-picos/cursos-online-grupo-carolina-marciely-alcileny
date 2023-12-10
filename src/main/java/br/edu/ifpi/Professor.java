@@ -35,18 +35,14 @@ public class Professor {
       System.out.println("|---------------------------------------|");
       System.out.println("| Vamos associar o professor a um curso!|");
       System.out.println("|---------------------------------------|");
-      Scanner scanner2 = new Scanner(System.in);
-      System.out.println("Enter para ir para continuar");
-      scanner2.nextLine();
+      SistemaAcademico.pausar();
 
       associarCurso();
     } catch (SQLException e) {
       System.out.println("|------------------------------------|");
       System.out.println("| Erro ao realizar cadastro!         |");
       System.out.println("|------------------------------------|");
-      Scanner scanner2 = new Scanner(System.in);
-      System.out.println("Enter para ir para o menu principal");
-      scanner2.nextLine();
+      SistemaAcademico.pausar();
     }
   }
 
@@ -85,10 +81,7 @@ public class Professor {
       System.out.println("| Nenhum professor encontrado!       |");
       System.out.println("|------------------------------------|");
     }
-
-    Scanner scanner2 = new Scanner(System.in);
-    System.out.println("Enter para ir para o menu principal");
-    scanner2.nextLine();
+    SistemaAcademico.pausar();
   }
 
   public void atualizarInformacoes() {
@@ -122,9 +115,7 @@ public class Professor {
       System.out.println("| Nenhum professor encontrado!       |");
       System.out.println("|------------------------------------|");
     }
-    Scanner scanner2 = new Scanner(System.in);
-    System.out.println("Enter para ir para o menu principal");
-    scanner2.nextLine();
+    SistemaAcademico.pausar();
   }
 
   public void visualizarListaProfessores() {
@@ -174,10 +165,7 @@ public class Professor {
       System.out.println("| Erro ao carregar dados do aluno!   |");
       System.out.println("|------------------------------------|");
     }
-
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Enter para ir para o menu principal");
-    scanner.nextLine();
+    SistemaAcademico.pausar();
   }
 
   private int carregarDadosDoProfessor() {
