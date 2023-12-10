@@ -1,27 +1,23 @@
-package br.edu.ifpi;
+package br.edu.ifpi.seguranca;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.entidades.Usuario;
 import br.edu.ifpi.enums.PapeisUsuario;
 
-public class AutenticacaoAutorizacao {
+public class AutenticacaoAutorizacao extends ConexaoBancoDeDados {
 
-    private Connection conexao;
     private PapeisUsuario tipoUsuario;
 
-    public AutenticacaoAutorizacao(Connection conexao) {
-        this.conexao = conexao;
-    }
-
     public void gerenciarPermissoes() {
-        Usuario usuario = new Usuario(conexao);
-        SistemaAcademico.limparConsole();
+        Usuario usuario = new Usuario();
+        limparConsole();
         int idUsuario = usuario.carregarDadosDoUsuario();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         if (idUsuario != 0) {
             System.out.println("|---------------------|");
             System.out.println("| 1 - ADMINISTRADOR   |");
@@ -32,7 +28,7 @@ public class AutenticacaoAutorizacao {
             System.out.println("Digite uma opção!");
             Scanner scanner = new Scanner(System.in);
             int opcao = scanner.nextInt();
-            SistemaAcademico.limparConsole();
+            limparConsole();
             String tipo;
 
             if (opcao == 1) {
@@ -46,7 +42,7 @@ public class AutenticacaoAutorizacao {
             String query = "UPDATE usuario SET tipo = '" + tipo + "' WHERE id = '" + idUsuario + "'";
 
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
                 System.out.println("|-----------------------------------|");
                 System.out.println("| Permissao atualizada com sucesso! |");
@@ -56,12 +52,10 @@ public class AutenticacaoAutorizacao {
                 System.out.println("| Erro ao atualizar permissao!  |");
                 System.out.println("|-------------------------------|");
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|-------------------------------|");
-            System.out.println("| Nenhum usuario encontrado!    |");
-            System.out.println("|-------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("usuario");
+            pausar();
         }
     }
 
@@ -76,13 +70,13 @@ public class AutenticacaoAutorizacao {
         String email = scanner.nextLine();
         System.out.println("Digite sua senha");
         String senha = scanner.nextLine();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         boolean resposta = false;
 
         String query = "SELECT tipo FROM usuario WHERE email = '" + email + "' AND senha = '" + senha + "'";
 
         try {
-            Statement stm = conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.next()) {
@@ -99,9 +93,7 @@ public class AutenticacaoAutorizacao {
             }
 
         } catch (SQLException e) {
-            System.out.println("|-------------------------------------|");
-            System.out.println("| Erro ao carregar dados do usuario!  |");
-            System.out.println("|-------------------------------------|");
+            imprimirErroAoCarregarDados("usuario");
         }
         return resposta;
     }

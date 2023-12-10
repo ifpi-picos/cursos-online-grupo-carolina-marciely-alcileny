@@ -1,6 +1,5 @@
-package br.edu.ifpi;
+package br.edu.ifpi.entidades;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,37 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Aluno {
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.utilidades.SistemaAcademico;
 
-    private Connection conexao;
-
-    public Aluno(Connection conexao) {
-        this.conexao = conexao;
-    }
+public class Aluno extends ConexaoBancoDeDados{
 
     public void cadastrarAluno() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Informe o nome do aluno");
         String nome = scanner.nextLine();
         System.out.println("Informe o email do aluno");
         String email = scanner.nextLine();
-        SistemaAcademico.limparConsole();
+        limparConsole();
 
         String query = "INSERT INTO aluno (nome, email) VALUES ('" + nome + "','" + email + "')";
 
         try {
-            Statement stm = conexao.createStatement();
+            Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            System.out.println("|-------------------------------|");
-            System.out.println("| Aluno cadastrado com sucesso! |");
-            System.out.println("|-------------------------------|");
+            imprimirMenssagemDeCadastro(SUCESSO, "Aluno");
         } catch (SQLException e) {
-            System.out.println("|-------------------------------|");
-            System.out.println("| Erro ao realizar cadastrado!  |");
-            System.out.println("|-------------------------------|");
+            imprimirMenssagemDeCadastro(ERRO, "Aluno");
         }
-        SistemaAcademico.pausar();
+        pausar();
     }
 
     private void matricular(int idCuso, int idAluno) {
@@ -46,29 +38,25 @@ public class Aluno {
                 + "')";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            System.out.println("|----------------------------------|");
-            System.out.println("| Matricula realizado com sucesso! |");
-            System.out.println("|----------------------------------|");
+            imprimirMenssagemDeCadastro(SUCESSO, "Matricula");
         } catch (SQLException e) {
-            System.out.println("|----------------------------------|");
-            System.out.println("| Erro ao realizar matricula!      |");
-            System.out.println("|----------------------------------|");
+            imprimirMenssagemDeCadastro(ERRO, "Matricula");
         }
-        SistemaAcademico.pausar();
+        pausar();
     }
 
     public void realizarMatricula() {
-        SistemaAcademico.limparConsole();
-        Curso curso = new Curso(conexao);
-        SistemaAcademico.limparConsole();
+        limparConsole();
+        Curso curso = new Curso();
+        limparConsole();
         int idAluno = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
+        limparConsole();
 
         if (idAluno != 0) {
             int idCuso = curso.carregarDadosCursoNaoMatriculado(idAluno);
-            SistemaAcademico.limparConsole();
+            limparConsole();
             if (idCuso != 0) {
                 matricular(idCuso,idAluno);
             } else {
@@ -76,62 +64,54 @@ public class Aluno {
                 System.out.println("| Nao foi encontrado nenhum curso ABERTO    |");
                 System.out.println("| Que o aluno nao esteja matriculado!       |");
                 System.out.println("|-------------------------------------------|");
-                SistemaAcademico.pausar();
+                pausar();
             }
         } else {
-            System.out.println("|-------------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!                  |");
-            System.out.println("|-------------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
 
     }
 
     public void atualizarInformacoes() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int idAluno = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         if (idAluno != 0) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Informe novo nome do aluno");
             String novoNome = scanner.nextLine();
             System.out.println("Informe o novo email do aluno");
             String email = scanner.nextLine();
-            SistemaAcademico.limparConsole();
+            limparConsole();
 
             String query = "UPDATE aluno SET nome = '" + novoNome + "', email = '" + email + "' WHERE id = '" + idAluno
                     + "'";
 
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                System.out.println("|------------------------------------|");
-                System.out.println("|Informacoes atualizado com sucesso! |");
-                System.out.println("|------------------------------------|");
+                imprimirMenssagemDeAtualizacao(SUCESSO);
             } catch (SQLException e) {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Erro ao atualizar informacoes!     |");
-                System.out.println("|------------------------------------|");
+                imprimirMenssagemDeAtualizacao(ERRO);
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!           |");
-            System.out.println("|------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
     }
 
     public void visualizarPerfil() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int idAluno = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
+        limparConsole();
 
         if (idAluno != 0) {
             String query = "SELECT matr.*, al.nome AS alnome, al.email, cur.nome AS curso FROM aluno al LEFT JOIN curso_e_aluno matr ON al.id = matr.aluno_id LEFT JOIN curso cur ON cur.id = matr.curso_id WHERE al.id = "
                     + idAluno;
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 ResultSet result = stm.executeQuery(query);
 
                 if (result.next()) {
@@ -156,54 +136,48 @@ public class Aluno {
                 }
 
             } catch (SQLException e) {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Erro ao carregar dados do aluno!   |");
-                System.out.println("|------------------------------------|");
+                imprimirErroAoCarregarDados("aluno");
 
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!           |");
-            System.out.println("|------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
     }
 
     public void cancelarMatricula() {
-        SistemaAcademico.limparConsole();
-        Curso curso = new Curso(conexao);
+        limparConsole();
+        Curso curso = new Curso();
         int aluno_id = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         if (aluno_id != 0) {
             int curso_id = curso.carregarDadosCursoMatriculado(aluno_id);
-            SistemaAcademico.limparConsole();
+            limparConsole();
             if (curso_id != 0) {
                 String query = "DELETE FROM curso_e_aluno WHERE aluno_id = " + aluno_id + " AND curso_id = " + curso_id;
                 try {
-                    Statement stm = this.conexao.createStatement();
+                    Statement stm = connectar().createStatement();
                     stm.executeUpdate(query);
                     System.out.println("|------------------------------------|");
-                    System.out.println("| Matricula cancelada com sucesso!   |");
+                    System.out.println("| Matricula cancelada com SUCESSO!   |");
                     System.out.println("|------------------------------------|");
                 } catch (SQLException e) {
                     System.out.println("|------------------------------------|");
-                    System.out.println("| Erro ao cancelar matricula!        |");
+                    System.out.println("| ERRO ao cancelar matricula!        |");
                     System.out.println("|------------------------------------|");
                 }
-                SistemaAcademico.pausar();
+                pausar();
 
             } else {
                 System.out.println("|--------------------------------------|");
                 System.out.println("| Nenhuma curso matriculado encontrado!|");
                 System.out.println("|--------------------------------------|");
-                SistemaAcademico.pausar();
+                pausar();
             }
         } else {
-            System.out.println("|--------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!             |");
-            System.out.println("|--------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
     }
 
@@ -213,7 +187,7 @@ public class Aluno {
         int idSelecionado = 0;
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.isBeforeFirst()) {
@@ -234,10 +208,8 @@ public class Aluno {
             }
 
         } catch (SQLException e) {
-            System.out.println("|--------------------------------------|");
-            System.out.println("| Erro ao carregar dados do aluno!     |");
-            System.out.println("|--------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirErroAoCarregarDados("aluno");
+            pausar();
         }
 
         return idSelecionado;
@@ -252,7 +224,7 @@ public class Aluno {
             String query = "SELECT ca.*,(SELECT nome FROM aluno WHERE id = ca.aluno_id) AS nome, (SELECT nome FROM curso WHERE id = ca.curso_id AND ca.concluido = 'sim') AS concluidos, curs.nome AS matriculados FROM curso_e_aluno ca LEFT JOIN curso curs ON curs.id = ca.curso_id  WHERE ca.aluno_id = "
                     + idAluno;
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 ResultSet result = stm.executeQuery(query);
                 List<String> cursosConcluidos = new ArrayList<>();
                 List<String> cursosMatriculados = new ArrayList<>();
@@ -296,17 +268,12 @@ public class Aluno {
                 }
 
             } catch (SQLException e) {
-                System.out.println("|----------------------------------|");
-                System.out.println("| Erro ao realizar consulta!       |");
-                System.out.println("|----------------------------------|");
-                e.printStackTrace();
+                imprimirErroAoConsultar();
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|-------------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!                  |");
-            System.out.println("|-------------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
     }
 }

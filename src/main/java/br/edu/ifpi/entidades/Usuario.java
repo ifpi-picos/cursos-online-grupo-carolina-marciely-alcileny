@@ -1,37 +1,34 @@
-package br.edu.ifpi;
+package br.edu.ifpi.entidades;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 import br.edu.ifpi.enums.PapeisUsuario;
 
-public class Usuario {
+public class Usuario  extends ConexaoBancoDeDados{
     private PapeisUsuario papel;
-    private Connection conexao;
 
-    public Usuario(Connection conexao) {
-        this.conexao = conexao;
+    public Usuario(PapeisUsuario papel) {
+        this.papel = papel;
     }
 
-    public Usuario(PapeisUsuario papel, Connection conexao) {
-        this.papel = papel;
-        this.conexao = conexao;
+    public Usuario() {
     }
 
     public void cadastrarUsuario() {
 
         Scanner scanner = new Scanner(System.in);
-        SistemaAcademico.limparConsole();
+        limparConsole();
         System.out.println("Informe o nome do usuario");
         String nome = scanner.nextLine();
         System.out.println("Informe o email do usuario");
         String email = scanner.nextLine();
         System.out.println("Informe a senha do usuario");
         String senha = scanner.nextLine();
-        SistemaAcademico.limparConsole();
+        limparConsole();
 
         System.out.println("|---------------------|");
         System.out.println("| 1 - ADMINISTRADOR   |");
@@ -41,7 +38,7 @@ public class Usuario {
 
         System.out.println("Digite uma opção!");
         int opcao = scanner.nextInt();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         String tipo = "ALUNO";
 
         if (opcao == 1) {
@@ -57,25 +54,21 @@ public class Usuario {
                 + "', '" + tipo + "')";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            System.out.println("|---------------------------------|");
-            System.out.println("| Usuario cadastrado com sucesso! |");
-            System.out.println("|---------------------------------|");
+            imprimirMenssagemDeCadastro(SUCESSO,"Usuario");
         } catch (SQLException e) {
-            System.out.println("|---------------------------------|");
-            System.out.println("| Erro ao cadastrar usuario!      |");
-            System.out.println("|---------------------------------|");
+            imprimirMenssagemDeCadastro(ERRO,"Usuario");
         }
-        SistemaAcademico.pausar();
+        pausar();
     }
 
     public void visualizarListaDeUsuarios() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         String query = "SELECT nome, email, tipo FROM usuario";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.next()) {
@@ -93,54 +86,44 @@ public class Usuario {
                 }
                 System.out.println("|===============================================");
             } else {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Nenhum usuario encontrado!         |");
-                System.out.println("|------------------------------------|");
+                imprimirNenhumDado("usuario");
             }
 
         } catch (SQLException e) {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Erro ao carregar dados do usuario! |");
-            System.out.println("|------------------------------------|");
+            imprimirErroAoCarregarDados("usuario");
         }
-        SistemaAcademico.pausar();
+        pausar();
     }
 
     public void atualizarUsuario() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         Scanner scanner = new Scanner(System.in);
         int idUsuario = carregarDadosDoUsuario();
         if (idUsuario != 0) {
-            SistemaAcademico.limparConsole();
+            limparConsole();
             System.out.println("Informe o novo nome do usuario");
             String nome = scanner.nextLine();
             System.out.println("Informe a nova e-mail do usuario");
             String email = scanner.nextLine();
             System.out.println("Informe a nova senha do usuario");
             String senha = scanner.nextLine();
-            SistemaAcademico.limparConsole();
+            limparConsole();
 
             String query = "UPDATE usuario SET nome = '" + nome + "', email = '" + email + "', senha = '" + senha
                     + "'  WHERE id = '" + idUsuario
                     + "'";
 
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                System.out.println("|------------------------------------------|");
-                System.out.println("| Dados do usuario atualizado com sucesso! |");
-                System.out.println("|------------------------------------------|");
+                imprimirMenssagemDeAtualizacao(SUCESSO);
             } catch (SQLException e) {
-                System.out.println("|-------------------------------------|");
-                System.out.println("| Erro ao atualizar dados do usuario! |");
-                System.out.println("|-------------------------------------|");
+                imprimirMenssagemDeAtualizacao(ERRO);
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Erro ao carregar dados do usuario! |");
-            System.out.println("|------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirErroAoCarregarDados("usuario");
+            pausar();
         }
 
     }
@@ -150,7 +133,7 @@ public class Usuario {
         int idSelecionado = 0;
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.next()) {
@@ -164,9 +147,7 @@ public class Usuario {
                 }
                 System.out.println("----------------------------------");
             } else {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Nenhum usuario encontrado!         |");
-                System.out.println("|------------------------------------|");
+                imprimirNenhumDado("usuario");
             }
 
             System.out.println("Selecione o ID do usuario!");
@@ -174,35 +155,28 @@ public class Usuario {
             idSelecionado = scanner.nextInt();
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados do usuario!");
+            imprimirErroAoCarregarDados("usuario");
         }
 
         return idSelecionado;
     }
 
     public void excluirUsuario() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int idUsuario = carregarDadosDoUsuario();
-        SistemaAcademico.limparConsole();
+        limparConsole();
 
         String query = "DELETE FROM usuario WHERE " + idUsuario + " = id";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            System.out.println("|-------------------------------------|");
-            System.out.println("| Usuario excluido com sucesso!       |");
-            System.out.println("|-------------------------------------|");
+            imprimirMenssagemDeExclusao(SUCESSO, "Usuario");
         } catch (SQLException e) {
-            System.out.println("|-------------------------------------|");
-            System.out.println("| Erro ao excluir usuario!            |");
-            System.out.println("|-------------------------------------|");
+            imprimirMenssagemDeExclusao(ERRO, "Usuario");
         }
-        Scanner scanner2 = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner2.nextLine();
+        pausar();
     }
-
     public PapeisUsuario getPapel() {
         return papel;
     }

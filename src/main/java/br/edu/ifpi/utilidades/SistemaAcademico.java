@@ -1,19 +1,22 @@
-package br.edu.ifpi;
+package br.edu.ifpi.utilidades;
 
-import java.sql.Connection;
 import java.util.Scanner;
 
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.entidades.Aluno;
+import br.edu.ifpi.entidades.Curso;
+import br.edu.ifpi.entidades.Professor;
+import br.edu.ifpi.entidades.Usuario;
 import br.edu.ifpi.enums.PapeisUsuario;
+import br.edu.ifpi.seguranca.AutenticacaoAutorizacao;
 
-public class SistemaAcademico {
+public class SistemaAcademico extends ConexaoBancoDeDados {
 
-    private Connection conexao;
     private Usuario usuario;
     private boolean continuar = true;
 
-    public void carregarSistema(Usuario usuario, Connection conexao) {
+    public void carregarSistema(Usuario usuario) {
         this.usuario = usuario;
-        this.conexao = conexao;
         while (continuar) {
             limparConsole();
             mostrarMenuPrincipal();
@@ -64,8 +67,7 @@ public class SistemaAcademico {
                 break;
             case 6:
                 limparConsole();
-                System.out.println("Voce saiu do sistema");
-                this.continuar = false;
+                sairDoSistema();
                 break;
             default:
                 System.out.println("Opcao invalida, tente novamente de 1 a 6!");
@@ -94,8 +96,7 @@ public class SistemaAcademico {
                 break;
             case 3:
                 limparConsole();
-                System.out.println("Voce saiu do sistema");
-                this.continuar = false;
+                sairDoSistema();
                 break;
             default:
                 System.out.println("Opcao invalida, tente novamente de 1 a 3!");
@@ -120,8 +121,7 @@ public class SistemaAcademico {
                 break;
             case 2:
                 limparConsole();
-                System.out.println("Voce saiu do sistema");
-                this.continuar = false;
+                sairDoSistema();
                 break;
             default:
                 System.out.println("Opcao invalida, tente novamente de 1 a 2!");
@@ -131,7 +131,7 @@ public class SistemaAcademico {
 
     private void mostrarMenuUsuario() {
         limparConsole();
-        Usuario usuario = new Usuario(conexao);
+        Usuario usuario = new Usuario();
         System.out.println("|-----------MENU DO USUARIO---------|");
         System.out.println("| 1 - Cadastrar Usuario             |");
         System.out.println("| 2 - Visualizar Usuarios           |");
@@ -178,7 +178,7 @@ public class SistemaAcademico {
         System.out.println("| 7 - Menu principal             |");
         System.out.println("|--------------------------------|");
 
-        Aluno aluno = new Aluno(conexao);
+        Aluno aluno = new Aluno();
 
         System.out.println("Digite uma opção!");
         Scanner scanner = new Scanner(System.in);
@@ -214,7 +214,7 @@ public class SistemaAcademico {
 
     private void mostrarMenuCurso() {
         limparConsole();
-        Curso curso = new Curso(conexao);
+        Curso curso = new Curso();
         System.out.println("|-------------------MENU CURSO-----------------|");
         System.out.println("| 1 - Cadastrar Curso                          |");
         System.out.println("| 2 - Atualizar Curso                          |");
@@ -254,7 +254,7 @@ public class SistemaAcademico {
 
     private void mostrarMenuProfessor() {
         limparConsole();
-        Professor professor = new Professor(conexao);
+        Professor professor = new Professor();
         System.out.println("|----------MENU DO PROFESSOR----------|");
         System.out.println("| 1 - Cadastrar professor(a)          |");
         System.out.println("| 2 - Associar Curso                  |");
@@ -291,7 +291,7 @@ public class SistemaAcademico {
 
     public void mostrarMenuAutenticacaoAutorizacao() {
         limparConsole();
-        AutenticacaoAutorizacao autenticacaoAutorizacao = new AutenticacaoAutorizacao(conexao);
+        AutenticacaoAutorizacao autenticacaoAutorizacao = new AutenticacaoAutorizacao();
 
         System.out.println("|--------MENU DE AUTORIZACAO---------|");
         System.out.println("| 1 - Gerenciar Permissoes           |");
@@ -315,23 +315,8 @@ public class SistemaAcademico {
         }
     }
 
-    public static void pausar() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner.nextLine();
-    }
-
-    public static void limparConsole() {
-        try {
-            final String os = System.getProperty("os.name");
-
-            if (os.contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void sairDoSistema() {
+        System.out.println("Voce saiu do sistema");
+        this.continuar = false;
     }
 }

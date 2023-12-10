@@ -1,73 +1,64 @@
-package br.edu.ifpi;
+package br.edu.ifpi.entidades;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class Professor {
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 
-  private Connection conexao;
+public class Professor extends ConexaoBancoDeDados{
 
-  public Professor(Connection conexao) {
-    this.conexao = conexao;
-  }
-
-  public void cadastroProfessor() {
+     public void cadastroProfessor() {
     Scanner scanner = new Scanner(System.in);
-    SistemaAcademico.limparConsole();
+    limparConsole();
     System.out.println("Informe o nome do professor(a)");
     String nome = scanner.nextLine();
     System.out.println("Informe o e-mail do professor(a)");
     String email = scanner.nextLine();
-    SistemaAcademico.limparConsole();
+    limparConsole();
 
     String query = "INSERT INTO professor (nome, email) VALUES ('" + nome + "','" + email + "')";
 
     try {
-      Statement stm = this.conexao.createStatement();
+      Statement stm = connectar().createStatement();
       stm.executeUpdate(query);
-      System.out.println("|------------------------------------|");
-      System.out.println("| Professor cadastrado com sucesso!  |");
-      System.out.println("|------------------------------------|");
+      imprimirMenssagemDeCadastro(SUCESSO, "Professor");
 
       System.out.println("|---------------------------------------|");
       System.out.println("| Vamos associar o professor a um curso!|");
       System.out.println("|---------------------------------------|");
-      SistemaAcademico.pausar();
+      pausar();
 
       associarCurso();
     } catch (SQLException e) {
-      System.out.println("|------------------------------------|");
-      System.out.println("| Erro ao realizar cadastro!         |");
-      System.out.println("|------------------------------------|");
-      SistemaAcademico.pausar();
+      imprimirMenssagemDeCadastro(ERRO, "Professor");
+      pausar();
     }
   }
 
   public void associarCurso() {
-    Curso curso = new Curso(conexao);
-    SistemaAcademico.limparConsole();
+    Curso curso = new Curso();
+    limparConsole();
     int idProfessor = carregarDadosDoProfessor();
-    SistemaAcademico.limparConsole();
+    limparConsole();
     if (idProfessor != 0) {
       int idCurso = curso.carregarDadosCursoNaoAssociado(idProfessor);
-      SistemaAcademico.limparConsole();
+      limparConsole();
       if (idCurso != 0) {
         String query = "INSERT INTO curso_e_professor (curso_id , professor_id) VALUES ('" + idCurso + "','"
             + idProfessor
             + "')";
 
         try {
-          Statement stm = this.conexao.createStatement();
+          Statement stm = connectar().createStatement();
           stm.executeUpdate(query);
           System.out.println("|------------------------------------|");
-          System.out.println("| Curso associado com sucesso!       |");
+          System.out.println("| Curso associado com SUCESSO!       |");
           System.out.println("|------------------------------------|");
         } catch (SQLException e) {
           System.out.println("|------------------------------------|");
-          System.out.println("| Erro ao associar curso!            |");
+          System.out.println("| ERRO ao associar curso!            |");
           System.out.println("|------------------------------------|");
         }
       } else {
@@ -77,53 +68,45 @@ public class Professor {
         System.out.println("|-------------------------------------------|");
       }
     } else {
-      System.out.println("|------------------------------------|");
-      System.out.println("| Nenhum professor encontrado!       |");
-      System.out.println("|------------------------------------|");
+      imprimirNenhumDado("professor");
     }
-    SistemaAcademico.pausar();
+    pausar();
   }
 
   public void atualizarInformacoes() {
     Scanner scanner = new Scanner(System.in);
-    SistemaAcademico.limparConsole();
+    limparConsole();
     int idProfessor = carregarDadosDoProfessor();
-    SistemaAcademico.limparConsole();
+    limparConsole();
     if (idProfessor != 0) {
       System.out.println("Informe o novo nome do professor");
       String nome = scanner.nextLine();
       System.out.println("Informe a nova e-mail do professor");
       String email = scanner.nextLine();
-      SistemaAcademico.limparConsole();
+      limparConsole();
 
       String query = "UPDATE professor SET nome = '" + nome + "', email = '" + email + "' WHERE id = '" + idProfessor
           + "'";
 
       try {
-        Statement stm = this.conexao.createStatement();
+        Statement stm = connectar().createStatement();
         stm.executeUpdate(query);
-        System.out.println("|--------------------------------------------|");
-        System.out.println("| Dados do professor atualizado com sucesso! |");
-        System.out.println("|--------------------------------------------|");
+        imprimirMenssagemDeAtualizacao(SUCESSO);
       } catch (SQLException e) {
-        System.out.println("|--------------------------------------|");
-        System.out.println("| Erro ao atualizar dados do professor!|");
-        System.out.println("|--------------------------------------|");
+        imprimirMenssagemDeAtualizacao(ERRO);
       }
     } else {
-      System.out.println("|------------------------------------|");
-      System.out.println("| Nenhum professor encontrado!       |");
-      System.out.println("|------------------------------------|");
+      imprimirNenhumDado("professor");
     }
-    SistemaAcademico.pausar();
+    pausar();
   }
 
   public void visualizarListaProfessores() {
-    SistemaAcademico.limparConsole();
+    limparConsole();
     String query = "SELECT assoc.*, prof.nome AS profnome, prof.email, cur.nome AS curso FROM professor prof LEFT JOIN curso_e_professor assoc ON prof.id = assoc.professor_id LEFT JOIN curso cur ON cur.id = assoc.curso_id";
 
     try {
-      Statement stm = this.conexao.createStatement();
+      Statement stm = connectar().createStatement();
       ResultSet result = stm.executeQuery(query);
 
       if (result.next()) {
@@ -161,11 +144,9 @@ public class Professor {
       System.out.println("|-------------------------------------------------|");
       }
     } catch (SQLException e) {
-      System.out.println("|------------------------------------|");
-      System.out.println("| Erro ao carregar dados do aluno!   |");
-      System.out.println("|------------------------------------|");
+      imprimirErroAoCarregarDados("aluno");
     }
-    SistemaAcademico.pausar();
+    pausar();
   }
 
   private int carregarDadosDoProfessor() {
@@ -173,7 +154,7 @@ public class Professor {
     int idSelecionado = 0;
 
     try {
-      Statement stm = this.conexao.createStatement();
+      Statement stm = connectar().createStatement();
       ResultSet result = stm.executeQuery(query);
 
       if (result.next()) {
@@ -193,15 +174,12 @@ public class Professor {
         Scanner scanner = new Scanner(System.in);
         idSelecionado = scanner.nextInt();
       } else {
-        System.out.println("|------------------------------------|");
-        System.out.println("| Nenhum professor encontrado!           |");
-        System.out.println("|------------------------------------|");
+        imprimirNenhumDado("professor");
       }
 
     } catch (SQLException e) {
-      System.out.println("Erro ao carregar dados do professor(a)!");
+      imprimirErroAoCarregarDados("professor");
     }
-
     return idSelecionado;
   }
 }

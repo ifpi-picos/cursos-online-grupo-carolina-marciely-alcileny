@@ -1,25 +1,19 @@
-package br.edu.ifpi;
+package br.edu.ifpi.entidades;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 import br.edu.ifpi.enums.StatusCurso;
 
-public class Curso {
-
-    private Connection conexao;
-
-    public Curso(Connection conexao) {
-        this.conexao = conexao;
-    }
+public class Curso extends ConexaoBancoDeDados{
 
     public void cadastrarCurso() {
         Scanner scanner = new Scanner(System.in);
         int papel = 0;
-        SistemaAcademico.limparConsole();
+        limparConsole();
         System.out.println("Informe o nome do curso");
         String nome = scanner.nextLine();
         System.out.println("Informe a carga horaria do curso");
@@ -31,7 +25,7 @@ public class Curso {
         System.out.println("|----------------------------|");
         System.out.println("Informe o status do curso");
         papel = scanner.nextInt();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         StatusCurso status = StatusCurso.ABERTO;
 
         if (papel == 2) {
@@ -42,24 +36,20 @@ public class Curso {
                 + "', '" + status + "')";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            System.out.println("|------------------------------------|");
-            System.out.println("| Curso cadastrado com sucesso!      |");
-            System.out.println("|------------------------------------|");
+            imprimirMenssagemDeCadastro(SUCESSO, "Curso");
         } catch (SQLException e) {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Erro ao realizar cadastro!         |");
-            System.out.println("|------------------------------------|");
+            imprimirMenssagemDeCadastro(ERRO, "Curso");
         }
-        SistemaAcademico.pausar();
+        pausar();
     }
 
     public void atualizarCurso() {
 
         Scanner scanner = new Scanner(System.in);
 
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int papel = 0;
         int idCurso = carregarDadosCurso();
         if (idCurso != 0) {
@@ -69,7 +59,7 @@ public class Curso {
             System.out.println("Informe a nova carga horaria do curso");
             String carga = scanner.nextLine();
             System.out.println();
-            SistemaAcademico.limparConsole();
+            limparConsole();
             System.out.println("|-------STATUS DO CURSO------|");
             System.out.println("| 1 - Aberto                 |");
             System.out.println("| 2 - Fechado                |");
@@ -77,7 +67,7 @@ public class Curso {
             System.out.println("Informe o status do curso");
             papel = scanner.nextInt();
             StatusCurso status = StatusCurso.ABERTO;
-            SistemaAcademico.limparConsole();
+            limparConsole();
             if (papel == 2) {
                 status = StatusCurso.FECHADO;
             }
@@ -87,76 +77,62 @@ public class Curso {
                     + "' WHERE id = '" + idCurso + "'";
 
             try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                System.out.println("|------------------------------------|");
-                System.out.println("| Curso atualizado com sucesso!      |");
-                System.out.println("|------------------------------------|");
+                imprimirMenssagemDeAtualizacao(SUCESSO);
             } catch (SQLException e) {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Erro ao atualizar curso!           |");
-                System.out.println("|------------------------------------|");
+                imprimirMenssagemDeAtualizacao(ERRO);
             }
-            SistemaAcademico.pausar();
+            pausar();
 
         } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum curso encontrado!           |");
-            System.out.println("|------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("curso");
+            pausar();
         }
     }
 
     public void registrarNotas() {
         Scanner scanner = new Scanner(System.in);
-        Aluno aluno = new Aluno(conexao);
-        Curso curso = new Curso(conexao);
+        Aluno aluno = new Aluno();
+        Curso curso = new Curso();
 
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int idAluno = aluno.carregarDadosDoAluno();
         if (idAluno != 0) {
-            SistemaAcademico.limparConsole();
+            limparConsole();
             int idCurso = curso.carregarDadosCursoMatriculado(idAluno);
-            SistemaAcademico.limparConsole();
+            limparConsole();
             if (idCurso != 0) {
                 System.out.println("Informe a nota do aluno");
                 String nota = scanner.nextLine();
                 String query = "INSERT INTO nota (nota, aluno_id, curso_id) VALUES ('" + nota + "','" + idAluno + "','"
                         + idCurso + "')";
                 try {
-                    Statement stm = this.conexao.createStatement();
+                    Statement stm = connectar().createStatement();
                     stm.executeUpdate(query);
-                    System.out.println("|--------------------------------------|");
-                    System.out.println("| Nota cadastrado com sucesso!         |");
-                    System.out.println("|--------------------------------------|");
+                    imprimirMenssagemDeCadastro(SUCESSO, "Nota");
 
                 } catch (SQLException e) {
-                    System.out.println("|--------------------------------------|");
-                    System.out.println("| Erro ao registrar nota!              |");
-                    System.out.println("|--------------------------------------|");
+                    imprimirMenssagemDeCadastro(ERRO, "Nota");
                 }
-                SistemaAcademico.pausar();
+                pausar();
 
             } else {
-                System.out.println("|--------------------------------------|");
-                System.out.println("| Nenhum curso encontrado!             |");
-                System.out.println("|--------------------------------------|");
-                SistemaAcademico.pausar();
+                imprimirNenhumDado("curso");
+                pausar();
 
             }
         } else {
-            System.out.println("|--------------------------------------|");
-            System.out.println("| Nenhum aluno encontrado!             |");
-            System.out.println("|--------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("aluno");
+            pausar();
         }
 
     }
 
     public void gerarEstatisticasDesempenho() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         int idCurso = carregarDadosCurso();
-        SistemaAcademico.limparConsole();
+        limparConsole();
         if(idCurso != 0){
 
             String query = "SELECT curs.nome AS nome_curso,"+ 
@@ -166,7 +142,7 @@ public class Curso {
             "(SELECT (SUM(CASE WHEN nota < 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_reprovados " +
             "FROM curso curs WHERE curs.id = " + idCurso;
            try {
-                Statement stm = this.conexao.createStatement();
+                Statement stm = connectar().createStatement();
                 ResultSet result = stm.executeQuery(query);
 
                 if (result.next()) {
@@ -184,33 +160,26 @@ public class Curso {
                     System.out.println("|===============================================|");
 
                 } else {
-                    System.out.println("|------------------------------------|");
-                    System.out.println("| Nenhum registro encontrado!        |");
-                    System.out.println("|------------------------------------|");
+                    imprimirNenhumDado("registro");
                 }
 
             } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println("|------------------------------------|");
-                System.out.println("| Erro ao carregar notas do aluno!   |");
-                System.out.println("|------------------------------------|");
+                imprimirErroAoCarregarDados("aluno");
             }
-            SistemaAcademico.pausar();
+            pausar();
         } else {
-            System.out.println("|------------------------------------|");
-            System.out.println("| Nenhum curso encontrado!           |");
-            System.out.println("|------------------------------------|");
-            SistemaAcademico.pausar();
+            imprimirNenhumDado("curso");
+            pausar();
         }
     } 
 
     
     public void visualizarListaDeCursos() {
-        SistemaAcademico.limparConsole();
+        limparConsole();
         String query = "SELECT * FROM curso";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.next()) {
@@ -241,16 +210,13 @@ public class Curso {
                 }
                 System.out.println("---------------------------------------------");
             } else {
-                System.out.println("|------------------------------------|");
-                System.out.println("| Nenhum curso encontrado!           |");
-                System.out.println("|------------------------------------|");
+                imprimirNenhumDado("curso");
             }
-            SistemaAcademico.pausar();
+            pausar();
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados dos cursos!");
-            System.out.println("----------------------------------");
-            SistemaAcademico.pausar();
+            imprimirErroAoCarregarDados("curso");
+            pausar();
         }
     }
 
@@ -262,7 +228,7 @@ public class Curso {
         
         int idSelecionado = 0;
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.isBeforeFirst()) {
@@ -283,7 +249,7 @@ public class Curso {
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados do curso!");
+            imprimirErroAoCarregarDados("curso");
         }
 
         return idSelecionado;
@@ -298,7 +264,7 @@ public class Curso {
 
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.isBeforeFirst()) {
@@ -322,7 +288,7 @@ public class Curso {
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados do curso!");
+            imprimirErroAoCarregarDados("curso");
         }
 
         return idSelecionado;
@@ -334,7 +300,7 @@ public class Curso {
                 + idAluno + ")";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.isBeforeFirst()) {
@@ -355,7 +321,7 @@ public class Curso {
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados do curso!");
+            imprimirErroAoCarregarDados("curso");
         }
 
         return idSelecionado;
@@ -367,7 +333,7 @@ public class Curso {
                 + idProfessor + ")";
 
         try {
-            Statement stm = this.conexao.createStatement();
+            Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
 
             if (result.isBeforeFirst()) {
@@ -388,7 +354,7 @@ public class Curso {
             }
 
         } catch (SQLException e) {
-            System.out.println("Erro ao carregar dados do curso!");
+            imprimirErroAoCarregarDados("curso");
         }
 
         return idSelecionado;
