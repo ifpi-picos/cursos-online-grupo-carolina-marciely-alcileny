@@ -10,7 +10,7 @@ import java.util.Scanner;
 import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 import br.edu.ifpi.utilidades.SistemaAcademico;
 
-public class Aluno extends ConexaoBancoDeDados{
+public class Aluno extends ConexaoBancoDeDados {
 
     public void cadastrarAluno() {
         limparConsole();
@@ -30,10 +30,9 @@ public class Aluno extends ConexaoBancoDeDados{
         } catch (SQLException e) {
             imprimirMenssagemDeCadastro(ERRO, "Aluno");
         }
-        pausar();
     }
 
-    private void matricular(int idCuso, int idAluno) {
+    private void matricularAluno(int idCuso, int idAluno) {
         String query = "INSERT INTO curso_e_aluno (curso_id, aluno_id) VALUES ('" + idCuso + "','" + idAluno
                 + "')";
 
@@ -44,7 +43,6 @@ public class Aluno extends ConexaoBancoDeDados{
         } catch (SQLException e) {
             imprimirMenssagemDeCadastro(ERRO, "Matricula");
         }
-        pausar();
     }
 
     public void realizarMatricula() {
@@ -58,19 +56,34 @@ public class Aluno extends ConexaoBancoDeDados{
             int idCuso = curso.carregarDadosCursoNaoMatriculado(idAluno);
             limparConsole();
             if (idCuso != 0) {
-                matricular(idCuso,idAluno);
+                matricularAluno(idCuso, idAluno);
             } else {
-                System.out.println("|-------------------------------------------|");
-                System.out.println("| Nao foi encontrado nenhum curso ABERTO    |");
-                System.out.println("| Que o aluno nao esteja matriculado!       |");
-                System.out.println("|-------------------------------------------|");
-                pausar();
+                imprimirNenhumCursoAbertoEnc();
             }
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
 
+    }
+
+    private void atualizarAluno(int idAluno) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Informe novo nome do aluno");
+        String novoNome = scanner.nextLine();
+        System.out.println("Informe o novo email do aluno");
+        String email = scanner.nextLine();
+        limparConsole();
+
+        String query = "UPDATE aluno SET nome = '" + novoNome + "', email = '" + email + "' WHERE id = '" + idAluno
+                + "'";
+
+        try {
+            Statement stm = connectar().createStatement();
+            stm.executeUpdate(query);
+            imprimirMenssagemDeAtualizacao(SUCESSO, "Aluno");
+        } catch (SQLException e) {
+            imprimirMenssagemDeAtualizacao(ERRO, "Aluno");
+        }
     }
 
     public void atualizarInformacoes() {
@@ -78,27 +91,9 @@ public class Aluno extends ConexaoBancoDeDados{
         int idAluno = carregarDadosDoAluno();
         limparConsole();
         if (idAluno != 0) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Informe novo nome do aluno");
-            String novoNome = scanner.nextLine();
-            System.out.println("Informe o novo email do aluno");
-            String email = scanner.nextLine();
-            limparConsole();
-
-            String query = "UPDATE aluno SET nome = '" + novoNome + "', email = '" + email + "' WHERE id = '" + idAluno
-                    + "'";
-
-            try {
-                Statement stm = connectar().createStatement();
-                stm.executeUpdate(query);
-                imprimirMenssagemDeAtualizacao(SUCESSO);
-            } catch (SQLException e) {
-                imprimirMenssagemDeAtualizacao(ERRO);
-            }
-            pausar();
+            atualizarAluno(idAluno);
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
     }
 
@@ -134,15 +129,13 @@ public class Aluno extends ConexaoBancoDeDados{
                     }
                     System.out.println("|=============================================|");
                 }
+                pausar();
 
             } catch (SQLException e) {
                 imprimirErroAoCarregarDados("aluno");
-
             }
-            pausar();
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
     }
 
@@ -159,25 +152,16 @@ public class Aluno extends ConexaoBancoDeDados{
                 try {
                     Statement stm = connectar().createStatement();
                     stm.executeUpdate(query);
-                    System.out.println("|------------------------------------|");
-                    System.out.println("| Matricula cancelada com SUCESSO!   |");
-                    System.out.println("|------------------------------------|");
+                    imprimirMenssagemDeCancelamento(SUCESSO, "Matricula");
                 } catch (SQLException e) {
-                    System.out.println("|------------------------------------|");
-                    System.out.println("| ERRO ao cancelar matricula!        |");
-                    System.out.println("|------------------------------------|");
+                    imprimirMenssagemDeCancelamento(ERRO, "Matricula");
                 }
-                pausar();
 
             } else {
-                System.out.println("|--------------------------------------|");
-                System.out.println("| Nenhuma curso matriculado encontrado!|");
-                System.out.println("|--------------------------------------|");
-                pausar();
+                imprimirMensagemNenhumDado("matricula");
             }
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
     }
 
@@ -209,7 +193,6 @@ public class Aluno extends ConexaoBancoDeDados{
 
         } catch (SQLException e) {
             imprimirErroAoCarregarDados("aluno");
-            pausar();
         }
 
         return idSelecionado;
@@ -261,19 +244,16 @@ public class Aluno extends ConexaoBancoDeDados{
                     }
 
                     System.out.println("|================================================|");
+                    pausar();
                 } else {
-                    System.out.println("|---------------------------------------|");
-                    System.out.println("| Não está matriculado em nenhum curso! |");
-                    System.out.println("|---------------------------------------|");
+                    imprimirNenhumCursoAssociadoEnc();
                 }
 
             } catch (SQLException e) {
                 imprimirErroAoConsultar();
             }
-            pausar();
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
     }
 }

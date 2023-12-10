@@ -44,18 +44,12 @@ public class AutenticacaoAutorizacao extends ConexaoBancoDeDados {
             try {
                 Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                System.out.println("|-----------------------------------|");
-                System.out.println("| Permissao atualizada com sucesso! |");
-                System.out.println("|-----------------------------------|");
+                imprimirMenssagemDeAtualizacao(SUCESSO, "Permissao");
             } catch (SQLException e) {
-                System.out.println("|-------------------------------|");
-                System.out.println("| Erro ao atualizar permissao!  |");
-                System.out.println("|-------------------------------|");
+                imprimirMenssagemDeAtualizacao(ERRO, "Permissao");
             }
-            pausar();
         } else {
-            imprimirNenhumDado("usuario");
-            pausar();
+            imprimirMensagemNenhumDado("usuario");
         }
     }
 

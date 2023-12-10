@@ -66,7 +66,6 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAutenticacaoAutorizacao();
                 break;
             case 6:
-                limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -95,7 +94,6 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAluno();
                 break;
             case 3:
-                limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -120,7 +118,6 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAluno();
                 break;
             case 2:
-                limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -316,6 +313,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     public void sairDoSistema() {
+        limparConsole();
         System.out.println("Voce saiu do sistema");
         this.continuar = false;
     }

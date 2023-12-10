@@ -8,7 +8,7 @@ import java.util.Scanner;
 import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 import br.edu.ifpi.enums.StatusCurso;
 
-public class Curso extends ConexaoBancoDeDados{
+public class Curso extends ConexaoBancoDeDados {
 
     public void cadastrarCurso() {
         Scanner scanner = new Scanner(System.in);
@@ -42,7 +42,6 @@ public class Curso extends ConexaoBancoDeDados{
         } catch (SQLException e) {
             imprimirMenssagemDeCadastro(ERRO, "Curso");
         }
-        pausar();
     }
 
     public void atualizarCurso() {
@@ -79,15 +78,13 @@ public class Curso extends ConexaoBancoDeDados{
             try {
                 Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                imprimirMenssagemDeAtualizacao(SUCESSO);
+                imprimirMenssagemDeAtualizacao(SUCESSO, "Curso");
             } catch (SQLException e) {
-                imprimirMenssagemDeAtualizacao(ERRO);
+                imprimirMenssagemDeAtualizacao(ERRO, "Curso");
             }
-            pausar();
 
         } else {
-            imprimirNenhumDado("curso");
-            pausar();
+            imprimirMensagemNenhumDado("curso");
         }
     }
 
@@ -115,33 +112,30 @@ public class Curso extends ConexaoBancoDeDados{
                 } catch (SQLException e) {
                     imprimirMenssagemDeCadastro(ERRO, "Nota");
                 }
-                pausar();
 
             } else {
-                imprimirNenhumDado("curso");
-                pausar();
-
+                imprimirMensagemNenhumDado("curso");
             }
         } else {
-            imprimirNenhumDado("aluno");
-            pausar();
+            imprimirMensagemNenhumDado("aluno");
         }
-
     }
 
     public void gerarEstatisticasDesempenho() {
         limparConsole();
         int idCurso = carregarDadosCurso();
         limparConsole();
-        if(idCurso != 0){
+        if (idCurso != 0) {
 
-            String query = "SELECT curs.nome AS nome_curso,"+ 
-            "(SELECT COUNT(aluno_id) FROM curso_e_aluno WHERE curso_id = curs.id ) AS matriculados, " +
-            "(SELECT AVG(nota) FROM nota WHERE curso_id = curs.id ) AS media, " +
-            "(SELECT (SUM(CASE WHEN nota >= 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_aprovados, " +
-            "(SELECT (SUM(CASE WHEN nota < 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_reprovados " +
-            "FROM curso curs WHERE curs.id = " + idCurso;
-           try {
+            String query = "SELECT curs.nome AS nome_curso," +
+                    "(SELECT COUNT(aluno_id) FROM curso_e_aluno WHERE curso_id = curs.id ) AS matriculados, " +
+                    "(SELECT AVG(nota) FROM nota WHERE curso_id = curs.id ) AS media, " +
+                    "(SELECT (SUM(CASE WHEN nota >= 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_aprovados, "
+                    +
+                    "(SELECT (SUM(CASE WHEN nota < 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_reprovados "
+                    +
+                    "FROM curso curs WHERE curs.id = " + idCurso;
+            try {
                 Statement stm = connectar().createStatement();
                 ResultSet result = stm.executeQuery(query);
 
@@ -155,25 +149,23 @@ public class Curso extends ConexaoBancoDeDados{
                     System.out.println("| Nome do Curso: " + nome);
                     System.out.println("| Quantidade de alunos matriculados: " + matriculados);
                     System.out.println("| Nota media dos alunos: " + media);
-                    System.out.println("| Porcentagem dos alunos aprovados: " + porcentAprovados +"%");
-                    System.out.println("| Porcentagem dos alunos reprovados: " + porcentReprovados+"%");
+                    System.out.println("| Porcentagem dos alunos aprovados: " + porcentAprovados + "%");
+                    System.out.println("| Porcentagem dos alunos reprovados: " + porcentReprovados + "%");
                     System.out.println("|===============================================|");
+                    pausar();
 
                 } else {
-                    imprimirNenhumDado("registro");
+                    imprimirMensagemNenhumDado("registro");
                 }
 
             } catch (SQLException e) {
                 imprimirErroAoCarregarDados("aluno");
             }
-            pausar();
         } else {
-            imprimirNenhumDado("curso");
-            pausar();
+            imprimirMensagemNenhumDado("curso");
         }
-    } 
+    }
 
-    
     public void visualizarListaDeCursos() {
         limparConsole();
         String query = "SELECT * FROM curso";
@@ -209,23 +201,21 @@ public class Curso extends ConexaoBancoDeDados{
                     System.out.println();
                 }
                 System.out.println("---------------------------------------------");
+                pausar();
             } else {
-                imprimirNenhumDado("curso");
+                imprimirMensagemNenhumDado("curso");
             }
-            pausar();
 
         } catch (SQLException e) {
             imprimirErroAoCarregarDados("curso");
-            pausar();
         }
     }
 
     public int carregarDadosCurso() {
         String query = "SELECT c.id, c.nome, c.status " +
-        "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
-        "GROUP BY c.id, c.nome, c.status";
-       
-        
+                "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
+                "GROUP BY c.id, c.nome, c.status";
+
         int idSelecionado = 0;
         try {
             Statement stm = connectar().createStatement();
@@ -258,11 +248,9 @@ public class Curso extends ConexaoBancoDeDados{
     public int carregarDadosCursoMatriculado(int idAluno) {
         int idSelecionado = 0;
         String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
-               "FROM curso c INNER JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
-               "WHERE ca.aluno_id = " + idAluno + " " +
-               "GROUP BY c.id, c.nome, c.status";
-
-
+                "FROM curso c INNER JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
+                "WHERE ca.aluno_id = " + idAluno + " " +
+                "GROUP BY c.id, c.nome, c.status";
         try {
             Statement stm = connectar().createStatement();
             ResultSet result = stm.executeQuery(query);
@@ -274,10 +262,10 @@ public class Curso extends ConexaoBancoDeDados{
                     int id = result.getInt("id");
                     String nome = result.getString("nome");
                     String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status); 
+                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
                     int quantidadeAlunos = result.getInt("quantidade_alunos");
-                     System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
-                   " Quantidade de Alunos: " + quantidadeAlunos);
+                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status +
+                            " Quantidade de Alunos: " + quantidadeAlunos);
 
                 }
                 System.out.println("----------------------------------");
@@ -356,8 +344,6 @@ public class Curso extends ConexaoBancoDeDados{
         } catch (SQLException e) {
             imprimirErroAoCarregarDados("curso");
         }
-
         return idSelecionado;
     }
-} 
-     
+}

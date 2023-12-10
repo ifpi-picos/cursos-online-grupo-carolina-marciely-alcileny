@@ -7,9 +7,9 @@ import java.util.Scanner;
 
 import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 
-public class Professor extends ConexaoBancoDeDados{
+public class Professor extends ConexaoBancoDeDados {
 
-     public void cadastroProfessor() {
+  public void cadastroProfessor() {
     Scanner scanner = new Scanner(System.in);
     limparConsole();
     System.out.println("Informe o nome do professor(a)");
@@ -24,16 +24,10 @@ public class Professor extends ConexaoBancoDeDados{
       Statement stm = connectar().createStatement();
       stm.executeUpdate(query);
       imprimirMenssagemDeCadastro(SUCESSO, "Professor");
-
-      System.out.println("|---------------------------------------|");
-      System.out.println("| Vamos associar o professor a um curso!|");
-      System.out.println("|---------------------------------------|");
-      pausar();
-
+      imprimirAssociarProfessorACurso();
       associarCurso();
     } catch (SQLException e) {
       imprimirMenssagemDeCadastro(ERRO, "Professor");
-      pausar();
     }
   }
 
@@ -53,24 +47,16 @@ public class Professor extends ConexaoBancoDeDados{
         try {
           Statement stm = connectar().createStatement();
           stm.executeUpdate(query);
-          System.out.println("|------------------------------------|");
-          System.out.println("| Curso associado com SUCESSO!       |");
-          System.out.println("|------------------------------------|");
+          imprimirMenssagemDeAssociacao(SUCESSO, "Curso");
         } catch (SQLException e) {
-          System.out.println("|------------------------------------|");
-          System.out.println("| ERRO ao associar curso!            |");
-          System.out.println("|------------------------------------|");
+          imprimirMenssagemDeAssociacao(ERRO, "Curso");
         }
       } else {
-        System.out.println("|-------------------------------------------|");
-        System.out.println("| Nao foi encontrado nenhum curso           |");
-        System.out.println("| Que o professor nao esteja associado!     |");
-        System.out.println("|-------------------------------------------|");
+        imprimirNenhumCursoAssociadoEnc();
       }
     } else {
-      imprimirNenhumDado("professor");
+      imprimirMensagemNenhumDado("professor");
     }
-    pausar();
   }
 
   public void atualizarInformacoes() {
@@ -91,14 +77,13 @@ public class Professor extends ConexaoBancoDeDados{
       try {
         Statement stm = connectar().createStatement();
         stm.executeUpdate(query);
-        imprimirMenssagemDeAtualizacao(SUCESSO);
+        imprimirMenssagemDeAtualizacao(SUCESSO, "Professor");
       } catch (SQLException e) {
-        imprimirMenssagemDeAtualizacao(ERRO);
+        imprimirMenssagemDeAtualizacao(ERRO, "Professor");
       }
     } else {
-      imprimirNenhumDado("professor");
+      imprimirMensagemNenhumDado("professor");
     }
-    pausar();
   }
 
   public void visualizarListaProfessores() {
@@ -138,15 +123,13 @@ public class Professor extends ConexaoBancoDeDados{
           }
         }
         System.out.println("|=====================================================|");
-      }else{
-      System.out.println("|-------------------------------------------------|");
-      System.out.println("| Nenhum professor associado a cursos encontrado! |");
-      System.out.println("|-------------------------------------------------|");
+        pausar();
+      } else {
+        imprimirNenhumProfessorAssociadoEnc();
       }
     } catch (SQLException e) {
       imprimirErroAoCarregarDados("aluno");
     }
-    pausar();
   }
 
   private int carregarDadosDoProfessor() {
@@ -174,7 +157,7 @@ public class Professor extends ConexaoBancoDeDados{
         Scanner scanner = new Scanner(System.in);
         idSelecionado = scanner.nextInt();
       } else {
-        imprimirNenhumDado("professor");
+        imprimirMensagemNenhumDado("professor");
       }
 
     } catch (SQLException e) {

@@ -8,7 +8,7 @@ import java.util.Scanner;
 import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
 import br.edu.ifpi.enums.PapeisUsuario;
 
-public class Usuario  extends ConexaoBancoDeDados{
+public class Usuario extends ConexaoBancoDeDados {
     private PapeisUsuario papel;
 
     public Usuario(PapeisUsuario papel) {
@@ -56,11 +56,10 @@ public class Usuario  extends ConexaoBancoDeDados{
         try {
             Statement stm = connectar().createStatement();
             stm.executeUpdate(query);
-            imprimirMenssagemDeCadastro(SUCESSO,"Usuario");
+            imprimirMenssagemDeCadastro(SUCESSO, "Usuario");
         } catch (SQLException e) {
-            imprimirMenssagemDeCadastro(ERRO,"Usuario");
+            imprimirMenssagemDeCadastro(ERRO, "Usuario");
         }
-        pausar();
     }
 
     public void visualizarListaDeUsuarios() {
@@ -85,14 +84,14 @@ public class Usuario  extends ConexaoBancoDeDados{
                     System.out.println("|-----------------------------------------------");
                 }
                 System.out.println("|===============================================");
+                pausar();
             } else {
-                imprimirNenhumDado("usuario");
+                imprimirMensagemNenhumDado("usuario");
             }
 
         } catch (SQLException e) {
             imprimirErroAoCarregarDados("usuario");
         }
-        pausar();
     }
 
     public void atualizarUsuario() {
@@ -116,14 +115,12 @@ public class Usuario  extends ConexaoBancoDeDados{
             try {
                 Statement stm = connectar().createStatement();
                 stm.executeUpdate(query);
-                imprimirMenssagemDeAtualizacao(SUCESSO);
+                imprimirMenssagemDeAtualizacao(SUCESSO, "Usuario");
             } catch (SQLException e) {
-                imprimirMenssagemDeAtualizacao(ERRO);
+                imprimirMenssagemDeAtualizacao(ERRO, "Usuario");
             }
-            pausar();
         } else {
             imprimirErroAoCarregarDados("usuario");
-            pausar();
         }
 
     }
@@ -147,7 +144,7 @@ public class Usuario  extends ConexaoBancoDeDados{
                 }
                 System.out.println("----------------------------------");
             } else {
-                imprimirNenhumDado("usuario");
+                imprimirMensagemNenhumDado("usuario");
             }
 
             System.out.println("Selecione o ID do usuario!");
@@ -175,8 +172,8 @@ public class Usuario  extends ConexaoBancoDeDados{
         } catch (SQLException e) {
             imprimirMenssagemDeExclusao(ERRO, "Usuario");
         }
-        pausar();
     }
+
     public PapeisUsuario getPapel() {
         return papel;
     }
