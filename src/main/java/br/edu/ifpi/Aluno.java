@@ -38,56 +38,51 @@ public class Aluno {
             System.out.println("| Erro ao realizar cadastrado!  |");
             System.out.println("|-------------------------------|");
         }
-        Scanner scanner2 = new Scanner(System.in);
-        System.out.println("Enter para ir para o menu principal");
-        scanner2.nextLine();
+        SistemaAcademico.pausar();
+    }
+
+    private void matricular(int idCuso, int idAluno) {
+        String query = "INSERT INTO curso_e_aluno (curso_id, aluno_id) VALUES ('" + idCuso + "','" + idAluno
+                + "')";
+
+        try {
+            Statement stm = this.conexao.createStatement();
+            stm.executeUpdate(query);
+            System.out.println("|----------------------------------|");
+            System.out.println("| Matricula realizado com sucesso! |");
+            System.out.println("|----------------------------------|");
+        } catch (SQLException e) {
+            System.out.println("|----------------------------------|");
+            System.out.println("| Erro ao realizar matricula!      |");
+            System.out.println("|----------------------------------|");
+        }
+        SistemaAcademico.pausar();
     }
 
     public void realizarMatricula() {
         SistemaAcademico.limparConsole();
-
         Curso curso = new Curso(conexao);
+        SistemaAcademico.limparConsole();
+        int idAluno = carregarDadosDoAluno();
+        SistemaAcademico.limparConsole();
 
-        SistemaAcademico.limparConsole();
-        int aluno_id = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
-        if (aluno_id != 0) {
-            int curso_id = curso.carregarDadosCursoNaoMatriculado(aluno_id);
+        if (idAluno != 0) {
+            int idCuso = curso.carregarDadosCursoNaoMatriculado(idAluno);
             SistemaAcademico.limparConsole();
-            if (curso_id != 0) {
-                String query = "INSERT INTO curso_e_aluno (curso_id, aluno_id) VALUES ('" + curso_id + "','" + aluno_id
-                        + "')";
-
-                try {
-                    Statement stm = this.conexao.createStatement();
-                    stm.executeUpdate(query);
-                    System.out.println("|----------------------------------|");
-                    System.out.println("| Matricula realizado com sucesso! |");
-                    System.out.println("|----------------------------------|");
-                } catch (SQLException e) {
-                    System.out.println("|----------------------------------|");
-                    System.out.println("| Erro ao realizar matricula!      |");
-                    System.out.println("|----------------------------------|");
-                }
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner.nextLine();
+            if (idCuso != 0) {
+                matricular(idCuso,idAluno);
             } else {
                 System.out.println("|-------------------------------------------|");
                 System.out.println("| Nao foi encontrado nenhum curso ABERTO    |");
                 System.out.println("| Que o aluno nao esteja matriculado!       |");
                 System.out.println("|-------------------------------------------|");
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner.nextLine();
+                SistemaAcademico.pausar();
             }
         } else {
             System.out.println("|-------------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!                  |");
             System.out.println("|-------------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
 
     }
@@ -118,16 +113,12 @@ public class Aluno {
                 System.out.println("| Erro ao atualizar informacoes!     |");
                 System.out.println("|------------------------------------|");
             }
-            Scanner scanner2 = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner2.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!           |");
             System.out.println("|------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 
@@ -170,16 +161,12 @@ public class Aluno {
                 System.out.println("|------------------------------------|");
 
             }
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!           |");
             System.out.println("|------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 
@@ -204,25 +191,19 @@ public class Aluno {
                     System.out.println("| Erro ao cancelar matricula!        |");
                     System.out.println("|------------------------------------|");
                 }
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner.nextLine();
+                SistemaAcademico.pausar();
 
             } else {
                 System.out.println("|--------------------------------------|");
                 System.out.println("| Nenhuma curso matriculado encontrado!|");
                 System.out.println("|--------------------------------------|");
-                Scanner scanner = new Scanner(System.in);
-                System.out.println("Enter para ir para o menu principal");
-                scanner.nextLine();
+                SistemaAcademico.pausar();
             }
         } else {
             System.out.println("|--------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!             |");
             System.out.println("|--------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 
@@ -256,9 +237,7 @@ public class Aluno {
             System.out.println("|--------------------------------------|");
             System.out.println("| Erro ao carregar dados do aluno!     |");
             System.out.println("|--------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
 
         return idSelecionado;
@@ -310,10 +289,10 @@ public class Aluno {
                     }
 
                     System.out.println("|================================================|");
-                }else{
-                System.out.println("|---------------------------------------|");
-                System.out.println("| Não está matriculado em nenhum curso! |");
-                System.out.println("|---------------------------------------|");  
+                } else {
+                    System.out.println("|---------------------------------------|");
+                    System.out.println("| Não está matriculado em nenhum curso! |");
+                    System.out.println("|---------------------------------------|");
                 }
 
             } catch (SQLException e) {
@@ -322,17 +301,12 @@ public class Aluno {
                 System.out.println("|----------------------------------|");
                 e.printStackTrace();
             }
-
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         } else {
             System.out.println("|-------------------------------------------|");
             System.out.println("| Nenhum aluno encontrado!                  |");
             System.out.println("|-------------------------------------------|");
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Enter para ir para o menu principal");
-            scanner.nextLine();
+            SistemaAcademico.pausar();
         }
     }
 }
