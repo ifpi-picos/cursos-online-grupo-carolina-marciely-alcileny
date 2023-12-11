@@ -172,7 +172,8 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
         System.out.println("| 4 - Atualizar Informacoes      |");
         System.out.println("| 5 - Gerar relatorio desempenho |");
         System.out.println("| 6 - Cancelar Matricula         |");
-        System.out.println("| 7 - Menu principal             |");
+        System.out.println("| 7 - Concluir Curso             |");
+        System.out.println("| 8 - Menu principal             |");
         System.out.println("|--------------------------------|");
 
         Aluno aluno = new Aluno();
@@ -201,10 +202,13 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 aluno.cancelarMatricula();
                 break;
             case 7:
+                aluno.concluirCurso();
+                break;
+            case 8:
                 mostrarMenuPrincipal();
                 break;
             default:
-                System.out.println("Opcao invalida, tente novamente de 1 a 7!");
+                System.out.println("Opcao invalida, tente novamente de 1 a 8!");
                 break;
         }
     }

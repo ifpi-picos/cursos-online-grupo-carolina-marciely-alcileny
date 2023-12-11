@@ -256,4 +256,36 @@ public class Aluno extends ConexaoBancoDeDados {
             imprimirMensagemNenhumDado("aluno");
         }
     }
+
+    public void concluirCurso() {
+        limparConsole();
+        Curso curso = new Curso();
+        limparConsole();
+        int idAluno = carregarDadosDoAluno();
+        limparConsole();
+
+        if (idAluno != 0) {
+            int idCuso = curso.carregarDadosCursoMatriculado(idAluno);
+            limparConsole();
+            if (idCuso != 0) {
+                concluir(idCuso, idAluno);
+            } else {
+                imprimirNenhumCursoAbertoEnc();
+            }
+        } else {
+            imprimirMensagemNenhumDado("aluno");
+        }
+    }
+
+    private void concluir(int idCuso, int idAluno) {
+        String query = "UPDATE curso_e_aluno SET concluido = 'sim' WHERE aluno_id = '" + idAluno + "' AND curso_id = '" + idCuso + "'";
+
+        try {
+            Statement stm = connectar().createStatement();
+            stm.executeUpdate(query);
+            imprimirMenssagemDeConclusao(SUCESSO);
+        } catch (SQLException e) {
+            imprimirMenssagemDeConclusao(ERRO);
+        }
+    }
 }

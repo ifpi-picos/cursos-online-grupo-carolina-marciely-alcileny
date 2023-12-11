@@ -109,6 +109,19 @@ public abstract class Mensagem {
         pausar();
     }
 
+    public void imprimirMenssagemDeConclusao(String status) {
+        if (status.equals(SUCESSO)) {
+            System.out.println("|-------------------------------------|");
+            System.out.println("| Curso concluido com sucesso!        |");
+            System.out.println("|-------------------------------------|");
+        } else {
+            System.out.println("|-------------------------------------|");
+            System.out.println("| Erro ao concluir curso!             |");
+            System.out.println("|-------------------------------------|");
+        }
+        pausar();
+    }
+
     public void imprimirErroAoConsultar() {
         System.out.println("|----------------------------------|");
         System.out.println("| Erro ao realizar consulta!       |");
