@@ -2,7 +2,7 @@ package br.edu.ifpi.utilidades;
 
 import java.util.Scanner;
 
-import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.Dao.ConexaoDao;
 import br.edu.ifpi.entidades.Aluno;
 import br.edu.ifpi.entidades.Curso;
 import br.edu.ifpi.entidades.Professor;
@@ -10,7 +10,7 @@ import br.edu.ifpi.entidades.Usuario;
 import br.edu.ifpi.enums.PapeisUsuario;
 import br.edu.ifpi.seguranca.AutenticacaoAutorizacao;
 
-public class SistemaAcademico extends ConexaoBancoDeDados {
+public class SistemaAcademico extends ConexaoDao {
 
     private Usuario usuario;
     private boolean continuar = true;
@@ -18,15 +18,15 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     public void carregarSistema(Usuario usuario) {
         this.usuario = usuario;
         while (continuar) {
-            limparConsole();
+            Mensagem.limparConsole();
             mostrarMenuPrincipal();
         }
     }
 
     public void mostrarMenuPrincipal() {
-        if (AutenticacaoAutorizacao.autorizarUsuario(usuario, PapeisUsuario.ADMINISTRADOR)) {
+        if (usuario.getPapel() == PapeisUsuario.ADMINISTRADOR) {
             mostrarMenuPrincipalAdministrador();
-        } else if (AutenticacaoAutorizacao.autorizarUsuario(usuario, PapeisUsuario.PROFESSOR)) {
+        } else if (usuario.getPapel() == PapeisUsuario.PROFESSOR) {
             mostrarMenuPrincipalProfessor();
         } else {
             mostrarMenuPrincipalAluno();
@@ -34,7 +34,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     public void mostrarMenuPrincipalAdministrador() {
-        limparConsole();
+        Mensagem.limparConsole();
 
         System.out.println("|---MENU PRINCIPAL DO ADMINISTRADOR(A)--|");
         System.out.println("| 1 - Gestao de Cursos                  |");
@@ -66,6 +66,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAutenticacaoAutorizacao();
                 break;
             case 6:
+                Mensagem.limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -75,7 +76,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     private void mostrarMenuPrincipalProfessor() {
-        limparConsole();
+        Mensagem.limparConsole();
         System.out.println("|---MENU PRINCIPAL DO PROFESSOR(A)--|");
         System.out.println("| 1 - Gestao de Professores         |");
         System.out.println("| 2 - Gestao de Alunos              |");
@@ -94,6 +95,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAluno();
                 break;
             case 3:
+                Mensagem.limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -103,7 +105,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     private void mostrarMenuPrincipalAluno() {
-        limparConsole();
+        Mensagem.limparConsole();
         System.out.println("|------MENU PRINCIPAL DO ALUNO------|");
         System.out.println("| 1 - Gestao de Alunos              |");
         System.out.println("| 2 - Sair do Sistema               |");
@@ -118,6 +120,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 mostrarMenuAluno();
                 break;
             case 2:
+                Mensagem.limparConsole();
                 sairDoSistema();
                 break;
             default:
@@ -127,7 +130,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     private void mostrarMenuUsuario() {
-        limparConsole();
+        Mensagem.limparConsole();
         Usuario usuario = new Usuario();
         System.out.println("|-----------MENU DO USUARIO---------|");
         System.out.println("| 1 - Cadastrar Usuario             |");
@@ -143,16 +146,16 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
 
         switch (opcao) {
             case 1:
-                usuario.cadastrarUsuario();
+                usuario.realizarCadastro();
                 break;
             case 2:
                 usuario.visualizarListaDeUsuarios();
                 break;
             case 3:
-                usuario.atualizarUsuario();
+                usuario.atualizarCadastro();
                 break;
             case 4:
-                usuario.excluirUsuario();
+                usuario.excluirCadastro();
                 break;
             case 5:
                 mostrarMenuPrincipal();
@@ -164,7 +167,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     private void mostrarMenuAluno() {
-        limparConsole();
+        Mensagem.limparConsole();
         System.out.println("|--------MENU DO ALUNO-----------|");
         System.out.println("| 1 - Cadastrar aluno            |");
         System.out.println("| 2 - Realizar matricula         |");
@@ -172,8 +175,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
         System.out.println("| 4 - Atualizar Informacoes      |");
         System.out.println("| 5 - Gerar relatorio desempenho |");
         System.out.println("| 6 - Cancelar Matricula         |");
-        System.out.println("| 7 - Concluir Curso             |");
-        System.out.println("| 8 - Menu principal             |");
+        System.out.println("| 7 - Menu principal             |");
         System.out.println("|--------------------------------|");
 
         Aluno aluno = new Aluno();
@@ -184,7 +186,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
 
         switch (opcao) {
             case 1:
-                aluno.cadastrarAluno();
+                aluno.realizarCadastro();
                 break;
             case 2:
                 aluno.realizarMatricula();
@@ -193,37 +195,34 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
                 aluno.visualizarPerfil();
                 break;
             case 4:
-                aluno.atualizarInformacoes();
+                aluno.atualizarCadastro();
                 break;
             case 5:
-                aluno.relatorioDesempenho();
+                aluno.gerarRelatorioDesempenho();
                 break;
             case 6:
                 aluno.cancelarMatricula();
                 break;
             case 7:
-                aluno.concluirCurso();
-                break;
-            case 8:
                 mostrarMenuPrincipal();
                 break;
             default:
-                System.out.println("Opcao invalida, tente novamente de 1 a 8!");
+                System.out.println("Opcao invalida, tente novamente de 1 a 7!");
                 break;
         }
     }
 
     private void mostrarMenuCurso() {
-        limparConsole();
+        Mensagem.limparConsole();
         Curso curso = new Curso();
-        System.out.println("|-------------------MENU CURSO-----------------|");
-        System.out.println("| 1 - Cadastrar Curso                          |");
-        System.out.println("| 2 - Atualizar Curso                          |");
-        System.out.println("| 3 - Visualizar Lista de Cursos               |");
-        System.out.println("| 4 - Registrar Notas                          |");
-        System.out.println("| 5 - Gerar Estatiticas de desempenho do Aluno |");
-        System.out.println("| 6 - Menu principal                           |");
-        System.out.println("|----------------------------------------------|");
+        System.out.println("|--------------------MENU CURSO------------------|");
+        System.out.println("| 1 - Cadastrar Curso                            |");
+        System.out.println("| 2 - Atualizar Curso                            |");
+        System.out.println("| 3 - Visualizar Lista de Cursos                 |");
+        System.out.println("| 4 - Registrar Notas                            |");
+        System.out.println("| 5 - Gerar Estatiticas de desempenho dos Alunos |");
+        System.out.println("| 6 - Menu principal                             |");
+        System.out.println("|------------------------------------------------|");
 
         System.out.println("Digite uma opcao!");
         Scanner scanner = new Scanner(System.in);
@@ -231,10 +230,10 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
 
         switch (opcao) {
             case 1:
-                curso.cadastrarCurso();
+                curso.realizarCadastro();
                 break;
             case 2:
-                curso.atualizarCurso();
+                curso.atualizarCadastro();
                 break;
             case 3:
                 curso.visualizarListaDeCursos();
@@ -254,7 +253,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     private void mostrarMenuProfessor() {
-        limparConsole();
+        Mensagem.limparConsole();
         Professor professor = new Professor();
         System.out.println("|----------MENU DO PROFESSOR----------|");
         System.out.println("| 1 - Cadastrar professor(a)          |");
@@ -270,13 +269,13 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
 
         switch (opcao) {
             case 1:
-                professor.cadastroProfessor();
+                professor.realizarCadastro();
                 break;
             case 2:
                 professor.associarCurso();
                 break;
             case 3:
-                professor.atualizarInformacoes();
+                professor.atualizarCadastro();
                 break;
             case 4:
                 professor.visualizarListaProfessores();
@@ -291,7 +290,7 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     public void mostrarMenuAutenticacaoAutorizacao() {
-        limparConsole();
+        Mensagem.limparConsole();
         AutenticacaoAutorizacao autenticacaoAutorizacao = new AutenticacaoAutorizacao();
 
         System.out.println("|--------MENU DE AUTORIZACAO---------|");
@@ -317,7 +316,6 @@ public class SistemaAcademico extends ConexaoBancoDeDados {
     }
 
     public void sairDoSistema() {
-        limparConsole();
         System.out.println("Voce saiu do sistema");
         this.continuar = false;
     }

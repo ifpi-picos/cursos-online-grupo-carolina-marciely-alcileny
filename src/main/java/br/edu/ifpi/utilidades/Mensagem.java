@@ -2,10 +2,10 @@ package br.edu.ifpi.utilidades;
 
 import java.util.Scanner;
 
-public abstract class Mensagem {
+public class Mensagem {
 
-    protected final String SUCESSO = "Sucesso";
-    protected final String ERRO = "Erro";
+    public final String SUCESSO = "Sucesso";
+    public final String ERRO = "Erro";
 
     public void imprimirMenssagemDeCadastro(String status, String tipo) {
         if (status.equals(SUCESSO)) {
@@ -143,7 +143,7 @@ public abstract class Mensagem {
         pausar();
     }
 
-    public void pausar() {
+    public static void pausar() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter para ir para o menu principal");
         scanner.nextLine();

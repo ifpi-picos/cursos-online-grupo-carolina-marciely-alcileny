@@ -1,15 +1,25 @@
 package br.edu.ifpi.entidades;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
-
-import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.Dao.UsuarioDao;
 import br.edu.ifpi.enums.PapeisUsuario;
+import br.edu.ifpi.utilidades.Mensagem;
 
-public class Usuario extends ConexaoBancoDeDados {
+public class Usuario {
+
+    private int id;
+    private String nome;
+    private String email;
+    private String senha;
     private PapeisUsuario papel;
+    
+    public Usuario(int id, String nome, String email, PapeisUsuario papel, String senha) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.papel = papel;
+    }
 
     public Usuario(PapeisUsuario papel) {
         this.papel = papel;
@@ -18,17 +28,21 @@ public class Usuario extends ConexaoBancoDeDados {
     public Usuario() {
     }
 
-    public void cadastrarUsuario() {
+    public Usuario(int id, PapeisUsuario papel) {
+        this.id = id;
+        this.papel = papel;
+    }
 
+    public void realizarCadastro() {
+        Mensagem.limparConsole();
         Scanner scanner = new Scanner(System.in);
-        limparConsole();
         System.out.println("Informe o nome do usuario");
         String nome = scanner.nextLine();
         System.out.println("Informe o email do usuario");
         String email = scanner.nextLine();
         System.out.println("Informe a senha do usuario");
         String senha = scanner.nextLine();
-        limparConsole();
+        Mensagem.limparConsole();
 
         System.out.println("|---------------------|");
         System.out.println("| 1 - ADMINISTRADOR   |");
@@ -38,143 +52,79 @@ public class Usuario extends ConexaoBancoDeDados {
 
         System.out.println("Digite uma opção!");
         int opcao = scanner.nextInt();
-        limparConsole();
-        String tipo = "ALUNO";
+        Mensagem.limparConsole();
+        PapeisUsuario tipo;
 
         if (opcao == 1) {
-            tipo = "ADMINISTRADOR";
+            tipo = PapeisUsuario.ADMINISTRADOR;
         } else if (opcao == 2) {
-            tipo = "PROFESSOR";
+            tipo = PapeisUsuario.PROFESSOR;
         } else {
-            tipo = "ALUNO";
+            tipo = PapeisUsuario.ALUNO;
         }
 
-        String query = "INSERT INTO usuario (nome, email, senha, tipo) VALUES ('" + nome + "','" + email + "', '"
-                + senha
-                + "', '" + tipo + "')";
-
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeCadastro(SUCESSO, "Usuario");
-        } catch (SQLException e) {
-            imprimirMenssagemDeCadastro(ERRO, "Usuario");
-        }
+        Usuario usuario = new Usuario(0, nome, email, tipo, senha);
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.cadastrar(usuario);
     }
 
     public void visualizarListaDeUsuarios() {
-        limparConsole();
-        String query = "SELECT nome, email, tipo FROM usuario";
-
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.next()) {
-                System.out.println("|=============LISTA DE USUARIOS=================");
-                while (result.next()) {
-
-                    String nome = result.getString("nome");
-                    String email = result.getString("email");
-                    String tipo = result.getString("tipo");
-
-                    System.out.println("| Nome " + nome);
-                    System.out.println("| Email " + email);
-                    System.out.println("| Tipo " + tipo);
-                    System.out.println("|-----------------------------------------------");
-                }
-                System.out.println("|===============================================");
-                pausar();
-            } else {
-                imprimirMensagemNenhumDado("usuario");
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("usuario");
-        }
+        Mensagem.limparConsole();
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.consultar();
+        Mensagem.pausar();
     }
 
-    public void atualizarUsuario() {
-        limparConsole();
+    public void atualizarCadastro() {
+        Mensagem.limparConsole();
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.consultar();
+        System.out.println("Digite o ID do usuario!");
         Scanner scanner = new Scanner(System.in);
-        int idUsuario = carregarDadosDoUsuario();
-        if (idUsuario != 0) {
-            limparConsole();
-            System.out.println("Informe o novo nome do usuario");
-            String nome = scanner.nextLine();
-            System.out.println("Informe a nova e-mail do usuario");
-            String email = scanner.nextLine();
-            System.out.println("Informe a nova senha do usuario");
-            String senha = scanner.nextLine();
-            limparConsole();
+        int id = scanner.nextInt();
+        Mensagem.limparConsole();
+        System.out.println("Informe o novo nome do usuario");
+        String nome = scanner.next();
+        System.out.println("Informe o novo e-mail do usuario");
+        String email = scanner.next();
+        System.out.println("Informe a nova senha do usuario");
+        String senha = scanner.next();
 
-            String query = "UPDATE usuario SET nome = '" + nome + "', email = '" + email + "', senha = '" + senha
-                    + "'  WHERE id = '" + idUsuario
-                    + "'";
-
-            try {
-                Statement stm = connectar().createStatement();
-                stm.executeUpdate(query);
-                imprimirMenssagemDeAtualizacao(SUCESSO, "Usuario");
-            } catch (SQLException e) {
-                imprimirMenssagemDeAtualizacao(ERRO, "Usuario");
-            }
-        } else {
-            imprimirErroAoCarregarDados("usuario");
-        }
-
+        Usuario usuario = new Usuario(id, nome, email, papel, senha);
+        usuarioDao.alterar(usuario);
     }
 
-    public int carregarDadosDoUsuario() {
-        String query = "SELECT id, nome FROM usuario";
-        int idSelecionado = 0;
-
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.next()) {
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-
-                    System.out.println(" ID -> " + id + " Nome: " + nome);
-                }
-                System.out.println("----------------------------------");
-            } else {
-                imprimirMensagemNenhumDado("usuario");
-            }
-
-            System.out.println("Selecione o ID do usuario!");
-            Scanner scanner = new Scanner(System.in);
-            idSelecionado = scanner.nextInt();
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("usuario");
-        }
-
-        return idSelecionado;
+    public void excluirCadastro() {
+        Mensagem.limparConsole();
+        UsuarioDao usuarioDao = new UsuarioDao();
+        usuarioDao.consultar();
+        System.out.println("Digite o ID do usuario!");
+        Scanner scanner = new Scanner(System.in);
+        int id = scanner.nextInt();
+        Mensagem.limparConsole();
+        
+        Usuario usuario = new Usuario(id, nome, email, papel, senha);
+        usuarioDao.remover(usuario);
     }
 
-    public void excluirUsuario() {
-        limparConsole();
-        int idUsuario = carregarDadosDoUsuario();
-        limparConsole();
+    public int getId() {
+        return id;
+    }
 
-        String query = "DELETE FROM usuario WHERE " + idUsuario + " = id";
+    public String getNome() {
+        return nome;
+    }
 
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeExclusao(SUCESSO, "Usuario");
-        } catch (SQLException e) {
-            imprimirMenssagemDeExclusao(ERRO, "Usuario");
-        }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenha() {
+        return senha;
     }
 
     public PapeisUsuario getPapel() {
         return papel;
     }
+
 }

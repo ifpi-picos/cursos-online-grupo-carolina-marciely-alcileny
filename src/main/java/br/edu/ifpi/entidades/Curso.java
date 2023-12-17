@@ -1,345 +1,133 @@
 package br.edu.ifpi.entidades;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 import java.util.Scanner;
 
-import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
+import br.edu.ifpi.Dao.AlunoDao;
+import br.edu.ifpi.Dao.CursoDao;
+import br.edu.ifpi.Dao.NotaDao;
 import br.edu.ifpi.enums.StatusCurso;
+import br.edu.ifpi.utilidades.Mensagem;
 
-public class Curso extends ConexaoBancoDeDados {
+public class Curso {
 
-    public void cadastrarCurso() {
+    private int id;
+    private String nome;
+    private String cargaHoraria;
+    private StatusCurso status;
+
+    public Curso(int id, String nome, String cargaHoraria, StatusCurso status) {
+        this.id = id;
+        this.nome = nome;
+        this.cargaHoraria = cargaHoraria;
+        this.status = status;
+    }
+
+    public Curso() {
+    }
+
+    public void realizarCadastro() {
+        Mensagem.limparConsole();
         Scanner scanner = new Scanner(System.in);
         int papel = 0;
-        limparConsole();
         System.out.println("Informe o nome do curso");
-        String nome = scanner.nextLine();
+        String nome = scanner.next();
         System.out.println("Informe a carga horaria do curso");
-        String carga = scanner.nextLine();
-        System.out.println();
+        String cargaHoraria = scanner.next();
+        Mensagem.limparConsole();
         System.out.println("|-------STATUS DO CURSO------|");
         System.out.println("| 1 - Aberto                 |");
         System.out.println("| 2 - Fechado                |");
         System.out.println("|----------------------------|");
         System.out.println("Informe o status do curso");
         papel = scanner.nextInt();
-        limparConsole();
         StatusCurso status = StatusCurso.ABERTO;
 
         if (papel == 2) {
             status = StatusCurso.FECHADO;
         }
 
-        String query = "INSERT INTO curso (nome, carga_horaria, status) VALUES ('" + nome + "','" + carga
-                + "', '" + status + "')";
-
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeCadastro(SUCESSO, "Curso");
-        } catch (SQLException e) {
-            imprimirMenssagemDeCadastro(ERRO, "Curso");
-        }
+        Curso curso = new Curso(0, nome, cargaHoraria, status);
+        CursoDao cursoDao = new CursoDao();
+        cursoDao.cadastrar(curso);
     }
 
-    public void atualizarCurso() {
-
+    public void atualizarCadastro() {
+        Mensagem.limparConsole();
+        CursoDao cursoDao = new CursoDao();
+        cursoDao.consultar();
         Scanner scanner = new Scanner(System.in);
-
-        limparConsole();
+        System.out.println("Informe ID do curso");
+        int id = scanner.nextInt();
+        Mensagem.limparConsole();
+        System.out.println("Informe o novo nome do curso");
+        String nome = scanner.next();
+        System.out.println("Informe a nova carga horaria do curso");
+        String cargaHoraria = scanner.next();
+        Mensagem.limparConsole();
+        System.out.println("|-------STATUS DO CURSO------|");
+        System.out.println("| 1 - Aberto                 |");
+        System.out.println("| 2 - Fechado                |");
+        System.out.println("|----------------------------|");
+        System.out.println("Informe o novo status do curso");
         int papel = 0;
-        int idCurso = carregarDadosCurso();
-        if (idCurso != 0) {
+        papel = scanner.nextInt();
+        StatusCurso status = StatusCurso.ABERTO;
 
-            System.out.println("Informe o novo nome do curso");
-            String nome = scanner.nextLine();
-            System.out.println("Informe a nova carga horaria do curso");
-            String carga = scanner.nextLine();
-            System.out.println();
-            limparConsole();
-            System.out.println("|-------STATUS DO CURSO------|");
-            System.out.println("| 1 - Aberto                 |");
-            System.out.println("| 2 - Fechado                |");
-            System.out.println("|----------------------------|");
-            System.out.println("Informe o status do curso");
-            papel = scanner.nextInt();
-            StatusCurso status = StatusCurso.ABERTO;
-            limparConsole();
-            if (papel == 2) {
-                status = StatusCurso.FECHADO;
-            }
-
-            String query = "UPDATE curso SET nome = '" + nome + "', carga_horaria = '" + carga + "', status = '"
-                    + status
-                    + "' WHERE id = '" + idCurso + "'";
-
-            try {
-                Statement stm = connectar().createStatement();
-                stm.executeUpdate(query);
-                imprimirMenssagemDeAtualizacao(SUCESSO, "Curso");
-            } catch (SQLException e) {
-                imprimirMenssagemDeAtualizacao(ERRO, "Curso");
-            }
-
-        } else {
-            imprimirMensagemNenhumDado("curso");
+        if (papel == 2) {
+            status = StatusCurso.FECHADO;
         }
+
+        Curso curso = new Curso(id, nome, cargaHoraria, status);
+        cursoDao.alterar(curso);
     }
 
     public void registrarNotas() {
+        Mensagem.limparConsole();
+        AlunoDao alunoDao = new AlunoDao();
+        CursoDao cursoDao = new CursoDao();
+        alunoDao.consultar();
         Scanner scanner = new Scanner(System.in);
-        Aluno aluno = new Aluno();
-        Curso curso = new Curso();
+        System.out.println("Informe o ID do aluno");
+        int idAluno = scanner.nextInt();
+        Mensagem.limparConsole();
+        cursoDao.consultar();
+        System.out.println("Informe o ID do curso");
+        int idCurso = scanner.nextInt();
+        Mensagem.limparConsole();
+        System.out.println("Informe a nota do aluno");
+        double notaDoAluno = scanner.nextDouble();
 
-        limparConsole();
-        int idAluno = aluno.carregarDadosDoAluno();
-        if (idAluno != 0) {
-            limparConsole();
-            int idCurso = curso.carregarDadosCursoMatriculado(idAluno);
-            limparConsole();
-            if (idCurso != 0) {
-                System.out.println("Informe a nota do aluno");
-                String nota = scanner.nextLine();
-                String query = "INSERT INTO nota (nota, aluno_id, curso_id) VALUES ('" + nota + "','" + idAluno + "','"
-                        + idCurso + "')";
-                try {
-                    Statement stm = connectar().createStatement();
-                    stm.executeUpdate(query);
-                    imprimirMenssagemDeCadastro(SUCESSO, "Nota");
-
-                } catch (SQLException e) {
-                    imprimirMenssagemDeCadastro(ERRO, "Nota");
-                }
-
-            } else {
-                imprimirMensagemNenhumDado("curso");
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
-    }
-
-    public void gerarEstatisticasDesempenho() {
-        limparConsole();
-        int idCurso = carregarDadosCurso();
-        limparConsole();
-        if (idCurso != 0) {
-
-            String query = "SELECT curs.nome AS nome_curso," +
-                    "(SELECT COUNT(aluno_id) FROM curso_e_aluno WHERE curso_id = curs.id ) AS matriculados, " +
-                    "(SELECT AVG(nota) FROM nota WHERE curso_id = curs.id ) AS media, " +
-                    "(SELECT (SUM(CASE WHEN nota >= 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_aprovados, "
-                    +
-                    "(SELECT (SUM(CASE WHEN nota < 7 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) FROM nota WHERE curso_id = curs.id ) AS porcent_reprovados "
-                    +
-                    "FROM curso curs WHERE curs.id = " + idCurso;
-            try {
-                Statement stm = connectar().createStatement();
-                ResultSet result = stm.executeQuery(query);
-
-                if (result.next()) {
-                    int matriculados = result.getInt("matriculados");
-                    double media = result.getInt("media");
-                    String nome = result.getString("nome_curso");
-                    int porcentAprovados = result.getInt("porcent_aprovados");
-                    int porcentReprovados = result.getInt("porcent_reprovados");
-                    System.out.println("|=====ESTATISTICAS DE DESEMPENHO DOS ALUNOS=====|");
-                    System.out.println("| Nome do Curso: " + nome);
-                    System.out.println("| Quantidade de alunos matriculados: " + matriculados);
-                    System.out.println("| Nota media dos alunos: " + media);
-                    System.out.println("| Porcentagem dos alunos aprovados: " + porcentAprovados + "%");
-                    System.out.println("| Porcentagem dos alunos reprovados: " + porcentReprovados + "%");
-                    System.out.println("|===============================================|");
-                    pausar();
-
-                } else {
-                    imprimirMensagemNenhumDado("registro");
-                }
-
-            } catch (SQLException e) {
-                imprimirErroAoCarregarDados("aluno");
-            }
-        } else {
-            imprimirMensagemNenhumDado("curso");
-        }
+        cursoDao.registrarNotas(idAluno, idCurso, notaDoAluno);
     }
 
     public void visualizarListaDeCursos() {
-        limparConsole();
-        String query = "SELECT * FROM curso";
-
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.next()) {
-                System.out.println("-------------LISTA DE CURSOS-----------------");
-                int id = result.getInt("id");
-                String nome = result.getString("nome");
-                String carga = result.getString("carga_horaria");
-                String status = result.getString("status");
-
-                System.out.println("ID: " + id);
-                System.out.println("Nome " + nome);
-                System.out.println("Carga Horaria " + carga);
-                System.out.println("Status " + status);
-                System.out.println();
-
-                while (result.next()) {
-
-                    id = result.getInt("id");
-                    nome = result.getString("nome");
-                    carga = result.getString("carga_horaria");
-                    status = result.getString("status");
-
-                    System.out.println("ID: " + id);
-                    System.out.println("Nome " + nome);
-                    System.out.println("Carga Horaria " + carga);
-                    System.out.println("Status " + status);
-                    System.out.println();
-                }
-                System.out.println("---------------------------------------------");
-                pausar();
-            } else {
-                imprimirMensagemNenhumDado("curso");
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("curso");
-        }
+        Mensagem.limparConsole();
+        CursoDao cursoDao = new CursoDao();
+        cursoDao.listarCursos(null);
+        Mensagem.pausar();
     }
 
-    public int carregarDadosCurso() {
-        String query = "SELECT c.id, c.nome, c.status " +
-                "FROM curso c LEFT JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
-                "GROUP BY c.id, c.nome, c.status";
-
-        int idSelecionado = 0;
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.isBeforeFirst()) {
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-                    String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
-
-                }
-                System.out.println("----------------------------------");
-
-                System.out.println("Selecione o ID do curso!");
-                Scanner scanner = new Scanner(System.in);
-                idSelecionado = scanner.nextInt();
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("curso");
-        }
-
-        return idSelecionado;
+    public void gerarEstatisticasDesempenho() {
+        Mensagem.limparConsole();
+        CursoDao cursoDao = new CursoDao();
+        cursoDao.gerarEstatisticasDesempenho();
+        Mensagem.pausar();
     }
 
-    public int carregarDadosCursoMatriculado(int idAluno) {
-        int idSelecionado = 0;
-        String query = "SELECT c.id, c.nome, c.status, COUNT(ca.aluno_id) as quantidade_alunos " +
-                "FROM curso c INNER JOIN curso_e_aluno ca ON c.id = ca.curso_id " +
-                "WHERE ca.aluno_id = " + idAluno + " " +
-                "GROUP BY c.id, c.nome, c.status";
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.isBeforeFirst()) {
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-                    String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
-                }
-                System.out.println("----------------------------------");
-
-                System.out.println("Selecione o ID do curso!");
-                Scanner scanner = new Scanner(System.in);
-                idSelecionado = scanner.nextInt();
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("curso");
-        }
-
-        return idSelecionado;
+    public int getId() {
+        return id;
     }
 
-    public int carregarDadosCursoNaoMatriculado(int idAluno) {
-        int idSelecionado = 0;
-        String query = "SELECT cur.id, cur.nome, cur.status FROM curso cur WHERE status = 'ABERTO' AND cur.id NOT IN (SELECT curso_id FROM curso_e_aluno WHERE aluno_id = "
-                + idAluno + ")";
-
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.isBeforeFirst()) {
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-                    String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
-
-                }
-                System.out.println("----------------------------------");
-
-                System.out.println("Selecione o ID do curso!");
-                Scanner scanner = new Scanner(System.in);
-                idSelecionado = scanner.nextInt();
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("curso");
-        }
-
-        return idSelecionado;
+    public String getNome() {
+        return nome;
     }
 
-    public int carregarDadosCursoNaoAssociado(int idProfessor) {
-        int idSelecionado = 0;
-        String query = "SELECT cur.id, cur.nome, cur.status FROM curso cur WHERE cur.id NOT IN (SELECT curso_id FROM curso_e_professor WHERE professor_id  = "
-                + idProfessor + ")";
+    public String getCargaHoraria() {
+        return cargaHoraria;
+    }
 
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.isBeforeFirst()) {
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-                    String status = result.getString("status");
-                    System.out.println(" ID -> " + id + " Nome: " + nome + " Status: " + status);
-
-                }
-                System.out.println("----------------------------------");
-
-                System.out.println("Selecione o ID do curso!");
-                Scanner scanner = new Scanner(System.in);
-                idSelecionado = scanner.nextInt();
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("curso");
-        }
-        return idSelecionado;
+    public StatusCurso getStatus() {
+        return status;
     }
 }

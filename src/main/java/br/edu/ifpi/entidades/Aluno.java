@@ -1,291 +1,137 @@
 package br.edu.ifpi.entidades;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
-import br.edu.ifpi.conexaoBD.ConexaoBancoDeDados;
-import br.edu.ifpi.utilidades.SistemaAcademico;
+import br.edu.ifpi.Dao.AlunoDao;
+import br.edu.ifpi.Dao.CursoDao;
+import br.edu.ifpi.Dao.CursoAlunoDao;
+import br.edu.ifpi.enums.StatusMatricula;
+import br.edu.ifpi.utilidades.Mensagem;
 
-public class Aluno extends ConexaoBancoDeDados {
+public class Aluno {
+    private int id;
+    private String nome;
+    private String email;
 
-    public void cadastrarAluno() {
-        limparConsole();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Informe o nome do aluno");
-        String nome = scanner.nextLine();
-        System.out.println("Informe o email do aluno");
-        String email = scanner.nextLine();
-        limparConsole();
-
-        String query = "INSERT INTO aluno (nome, email) VALUES ('" + nome + "','" + email + "')";
-
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeCadastro(SUCESSO, "Aluno");
-        } catch (SQLException e) {
-            imprimirMenssagemDeCadastro(ERRO, "Aluno");
-        }
+    public Aluno(int id, String nome, String email) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
     }
 
-    private void matricularAluno(int idCuso, int idAluno) {
-        String query = "INSERT INTO curso_e_aluno (curso_id, aluno_id) VALUES ('" + idCuso + "','" + idAluno
-                + "')";
+    public Aluno() {
+    }
 
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeCadastro(SUCESSO, "Matricula");
-        } catch (SQLException e) {
-            imprimirMenssagemDeCadastro(ERRO, "Matricula");
-        }
+    public void realizarCadastro() {
+        Mensagem.limparConsole();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Informe o nome do aluno");
+        String nome = scanner.next();
+        System.out.println("Informe o e-mail do aluno");
+        String email = scanner.next();
+        Mensagem.limparConsole();
+
+        Aluno aluno = new Aluno(0, nome, email);
+        AlunoDao alunoDao = new AlunoDao();
+        alunoDao.cadastrar(aluno);
+    }
+
+    public void atualizarCadastro() {
+        Mensagem.limparConsole();
+        AlunoDao alunoDao = new AlunoDao();
+        Scanner scanner = new Scanner(System.in);
+        alunoDao.consultar();
+        System.out.println("Informe o ID do aluno");
+        int id = scanner.nextInt();
+        Mensagem.limparConsole();
+        System.out.println("Informe o novo nome do aluno");
+        String nome = scanner.next();
+        System.out.println("Informe o novo e-mail do aluno");
+        String email = scanner.next();
+        Mensagem.limparConsole();
+
+        Aluno aluno = new Aluno(id, nome, email);
+        alunoDao.alterar(aluno);
     }
 
     public void realizarMatricula() {
-        limparConsole();
-        Curso curso = new Curso();
-        limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        limparConsole();
-
-        if (idAluno != 0) {
-            int idCuso = curso.carregarDadosCursoNaoMatriculado(idAluno);
-            limparConsole();
-            if (idCuso != 0) {
-                matricularAluno(idCuso, idAluno);
-            } else {
-                imprimirNenhumCursoAbertoEnc();
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
-
-    }
-
-    private void atualizarAluno(int idAluno) {
+        Mensagem.limparConsole();
+        CursoDao cursoDao = new CursoDao();
+        AlunoDao alunoDao = new AlunoDao();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Informe novo nome do aluno");
-        String novoNome = scanner.nextLine();
-        System.out.println("Informe o novo email do aluno");
-        String email = scanner.nextLine();
-        limparConsole();
+        alunoDao.consultar();
+        System.out.println("Informe o ID do aluno");
+        int idAluno = scanner.nextInt();
+        Mensagem.limparConsole();
+        cursoDao.consultar();
+        System.out.println("Informe o ID do curso");
+        int idCurso = scanner.nextInt();
+        Mensagem.limparConsole();
 
-        String query = "UPDATE aluno SET nome = '" + novoNome + "', email = '" + email + "' WHERE id = '" + idAluno
-                + "'";
+       alunoDao.realizarMatricula(idCurso, idAluno);
 
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeAtualizacao(SUCESSO, "Aluno");
-        } catch (SQLException e) {
-            imprimirMenssagemDeAtualizacao(ERRO, "Aluno");
-        }
-    }
-
-    public void atualizarInformacoes() {
-        limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        limparConsole();
-        if (idAluno != 0) {
-            atualizarAluno(idAluno);
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
     }
 
     public void visualizarPerfil() {
-        limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        limparConsole();
-
-        if (idAluno != 0) {
-            String query = "SELECT matr.*, al.nome AS alnome, al.email, cur.nome AS curso FROM aluno al LEFT JOIN curso_e_aluno matr ON al.id = matr.aluno_id LEFT JOIN curso cur ON cur.id = matr.curso_id WHERE al.id = "
-                    + idAluno;
-            try {
-                Statement stm = connectar().createStatement();
-                ResultSet result = stm.executeQuery(query);
-
-                if (result.next()) {
-                    String nome = result.getString("alnome");
-                    String email = result.getString("email");
-                    String curso = result.getString("curso");
-                    System.out.println("|===============PERFIL DO ALUNO===============|");
-                    System.out.println("| Nome: " + nome);
-                    System.out.println("| E-mail: " + email);
-                    System.out.println("|------------MATRICULADO NOS CURSOS-----------|");
-                    if (curso == null) {
-                        System.out.println("| Nao esta matriculado em nenhum curso |");
-                    } else {
-                        System.out.println("| " + curso);
-                    }
-
-                    while (result.next()) {
-                        curso = result.getString("curso");
-                        System.out.println("| " + curso);
-                    }
-                    System.out.println("|=============================================|");
-                }
-                pausar();
-
-            } catch (SQLException e) {
-                imprimirErroAoCarregarDados("aluno");
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
+        Mensagem.limparConsole();
+        AlunoDao alunoDao = new AlunoDao();
+        alunoDao.consultar();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Informe o ID do aluno");
+        int idAluno = scanner.nextInt();
+        alunoDao.visualizarPerfil(idAluno);
+        Mensagem.pausar();
     }
 
     public void cancelarMatricula() {
-        limparConsole();
-        Curso curso = new Curso();
-        int aluno_id = carregarDadosDoAluno();
-        limparConsole();
-        if (aluno_id != 0) {
-            int curso_id = curso.carregarDadosCursoMatriculado(aluno_id);
-            limparConsole();
-            if (curso_id != 0) {
-                String query = "DELETE FROM curso_e_aluno WHERE aluno_id = " + aluno_id + " AND curso_id = " + curso_id;
-                try {
-                    Statement stm = connectar().createStatement();
-                    stm.executeUpdate(query);
-                    imprimirMenssagemDeCancelamento(SUCESSO, "Matricula");
-                } catch (SQLException e) {
-                    imprimirMenssagemDeCancelamento(ERRO, "Matricula");
-                }
-
-            } else {
-                imprimirMensagemNenhumDado("matricula");
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
+        Mensagem.limparConsole();
+        AlunoDao alunoDao = new AlunoDao();
+        CursoDao cursoDao = new CursoDao();
+        CursoAlunoDao matriculaDao = new CursoAlunoDao();
+        Scanner scanner = new Scanner(System.in);
+        alunoDao.consultar();
+        System.out.println("Informe o ID do aluno");
+        int idAluno = scanner.nextInt();
+        Mensagem.limparConsole();
+        cursoDao.consultar();
+        System.out.println("Informe o ID do curso");
+        int idCurso = scanner.nextInt();
+        alunoDao.cancelarMatricula(idCurso, idAluno);
     }
 
-    public int carregarDadosDoAluno() {
-        SistemaAcademico.limparConsole();
-        String query = "SELECT id, nome FROM aluno";
-        int idSelecionado = 0;
+    public void concluirMatricula() {
+        Mensagem.limparConsole();
+        AlunoDao alunoDao = new AlunoDao();
+        CursoDao cursoDao = new CursoDao();
+        CursoAlunoDao matriculaDao = new CursoAlunoDao();
+        Scanner scanner = new Scanner(System.in);
+        alunoDao.consultar();
+        System.out.println("Informe o ID do aluno");
+        int idAluno = scanner.nextInt();
+        Mensagem.limparConsole();
+        cursoDao.consultar();
+        System.out.println("Informe o ID do curso");
+        int idCurso = scanner.nextInt();
 
-        try {
-            Statement stm = connectar().createStatement();
-            ResultSet result = stm.executeQuery(query);
-
-            if (result.isBeforeFirst()) {
-
-                System.out.println("----------------------------------");
-                while (result.next()) {
-
-                    int id = result.getInt("id");
-                    String nome = result.getString("nome");
-
-                    System.out.println(" ID -> " + id + " Nome: " + nome);
-                }
-                System.out.println("----------------------------------");
-
-                System.out.println("Selecione o ID do aluno!");
-                Scanner scanner = new Scanner(System.in);
-                idSelecionado = scanner.nextInt();
-            }
-
-        } catch (SQLException e) {
-            imprimirErroAoCarregarDados("aluno");
-        }
-
-        return idSelecionado;
+        CursoAluno matricula = new CursoAluno(idCurso, idAluno, null, null, StatusMatricula.CONCLUIDO);
+        matriculaDao.alterar(matricula);
     }
 
-    public void relatorioDesempenho() {
-        SistemaAcademico.limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        SistemaAcademico.limparConsole();
-
-        if (idAluno != 0) {
-            String query = "SELECT ca.*,(SELECT nome FROM aluno WHERE id = ca.aluno_id) AS nome, (SELECT nome FROM curso WHERE id = ca.curso_id AND ca.concluido = 'sim') AS concluidos, curs.nome AS matriculados FROM curso_e_aluno ca LEFT JOIN curso curs ON curs.id = ca.curso_id  WHERE ca.aluno_id = "
-                    + idAluno;
-            try {
-                Statement stm = connectar().createStatement();
-                ResultSet result = stm.executeQuery(query);
-                List<String> cursosConcluidos = new ArrayList<>();
-                List<String> cursosMatriculados = new ArrayList<>();
-
-                if (result.next()) {
-                    String nome = result.getString("nome");
-                    String concluidos = result.getString("concluidos");
-                    String matriculados = result.getString("matriculados");
-                    System.out.println("|===============RELATORIO DO ALUNO===============|");
-                    System.out.println("| Nome do aluno: " + nome);
-                    cursosConcluidos.add(concluidos);
-                    cursosMatriculados.add(matriculados);
-                    matriculados = result.getString("matriculados");
-
-                    while (result.next()) {
-                        nome = result.getString("nome");
-                        concluidos = result.getString("concluidos");
-                        matriculados = result.getString("matriculados");
-                        cursosConcluidos.add(concluidos);
-                        cursosMatriculados.add(matriculados);
-                    }
-                    System.out.println("|--------------MATRICULADO NOS CURSOS------------|");
-                    for (int i = 0; i < cursosMatriculados.size(); i++) {
-                        if (cursosMatriculados.get(i) != null) {
-                            System.out.println("| " + cursosMatriculados.get(i));
-                        }
-                    }
-
-                    System.out.println("|--------------CURSOS CONCLUIDOS-----------------|");
-                    for (int i = 0; i < cursosConcluidos.size(); i++) {
-                        if (cursosConcluidos.get(i) != null) {
-                            System.out.println("| " + cursosConcluidos.get(i));
-                        }
-                    }
-
-                    System.out.println("|================================================|");
-                    pausar();
-                } else {
-                    imprimirNenhumCursoAssociadoEnc();
-                }
-
-            } catch (SQLException e) {
-                imprimirErroAoConsultar();
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
+    public void gerarRelatorioDesempenho() {
+        AlunoDao alunoDao = new AlunoDao();
+        alunoDao.gerarRelatorioDesempenho();
+        Mensagem.pausar();
     }
 
-    public void concluirCurso() {
-        limparConsole();
-        Curso curso = new Curso();
-        limparConsole();
-        int idAluno = carregarDadosDoAluno();
-        limparConsole();
-
-        if (idAluno != 0) {
-            int idCuso = curso.carregarDadosCursoMatriculado(idAluno);
-            limparConsole();
-            if (idCuso != 0) {
-                concluir(idCuso, idAluno);
-            } else {
-                imprimirNenhumCursoAbertoEnc();
-            }
-        } else {
-            imprimirMensagemNenhumDado("aluno");
-        }
+    public int getId() {
+        return id;
     }
 
-    private void concluir(int idCuso, int idAluno) {
-        String query = "UPDATE curso_e_aluno SET concluido = 'sim' WHERE aluno_id = '" + idAluno + "' AND curso_id = '" + idCuso + "'";
+    public String getNome() {
+        return nome;
+    }
 
-        try {
-            Statement stm = connectar().createStatement();
-            stm.executeUpdate(query);
-            imprimirMenssagemDeConclusao(SUCESSO);
-        } catch (SQLException e) {
-            imprimirMenssagemDeConclusao(ERRO);
-        }
+    public String getEmail() {
+        return email;
     }
 }
