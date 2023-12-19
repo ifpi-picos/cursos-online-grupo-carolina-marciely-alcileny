@@ -51,7 +51,7 @@ public class AlunoDao implements Dao<Aluno> {
             mensagem.imprimirMensagemNenhumDado("aluno");
         }
     }
-
+    
     @Override
     public void remover(Aluno aluno) {
         String query = "DELETE FROM aluno WHERE ? = id";
