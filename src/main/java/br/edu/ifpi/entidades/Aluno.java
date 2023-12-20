@@ -22,19 +22,7 @@ public class Aluno {
     public Aluno() {
     }
 
-    public void realizarCadastro() {
-        Mensagem.limparConsole();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Informe o nome do aluno");
-        String nome = scanner.next();
-        System.out.println("Informe o e-mail do aluno");
-        String email = scanner.next();
-        Mensagem.limparConsole();
-
-        Aluno aluno = new Aluno(0, nome, email);
-        AlunoDao alunoDao = new AlunoDao();
-        alunoDao.cadastrar(aluno);
-    }
+    
 
     public void atualizarCadastro() {
         Mensagem.limparConsole();
